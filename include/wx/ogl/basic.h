@@ -259,6 +259,8 @@ class WXDLLIMPEXP_OGL wxShape: public wxShapeEvtHandler
   void SetDraggable(bool drag, bool recursive = false);
   inline  void SetFixedSize(bool x, bool y) { m_fixedWidth = x; m_fixedHeight = y; };
   inline  void GetFixedSize(bool *x, bool *y) const { *x = m_fixedWidth; *y = m_fixedHeight; };
+  inline  void SetFixedWidth(bool fixed = true) { m_fixedWidth = fixed; }
+  inline  void SetFixedHeight(bool fixed = true) { m_fixedHeight = fixed; }
   inline  bool GetFixedWidth() const { return m_fixedWidth; }
   inline  bool GetFixedHeight() const { return m_fixedHeight; }
   inline  void SetSpaceAttachments(bool sp) { m_spaceAttachments = sp; };
