@@ -174,7 +174,7 @@ wxBitmap* csSymbolDatabase::CreateToolBitmap(csSymbol* symbol, const wxSize& too
     memDC.SelectObject(*newBitmap);
     memDC.SetPen(* wxBLACK_PEN);
     memDC.SetBrush(* wxWHITE_BRUSH);
-    memDC.SetBackground(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE), wxSOLID));
+    memDC.SetBackground(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE)));
     memDC.SetLogicalFunction(wxCOPY);
     memDC.Clear();
 
@@ -204,7 +204,7 @@ wxBitmap* csSymbolDatabase::CreateToolBitmap(csSymbol* symbol, const wxSize& too
 
     memDC.SetUserScale(scaleFactor, scaleFactor);
 
-    memDC.SetBackground(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE), wxSOLID));
+    memDC.SetBackground(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE)));
     memDC.Clear();
 
     symbol->GetShape()->Show(true);

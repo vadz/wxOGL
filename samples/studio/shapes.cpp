@@ -189,8 +189,8 @@ void csEvtHandler::OnBeginDragRight(double x, double y, int WXUNUSED(keys), int 
   wxClientDC dc(GetShape()->GetCanvas());
   GetShape()->GetCanvas()->PrepareDC(dc);
 
-  wxPen dottedPen(*wxBLACK, 1, wxDOT);
-  dc.SetLogicalFunction(OGLRBLF);
+  wxPen dottedPen(*wxBLACK, 1, wxPENSTYLE_DOT);
+  dc.SetLogicalFunction(wxINVERT);
   dc.SetPen(dottedPen);
   double xp, yp;
   GetShape()->GetAttachmentPositionEdge(attachment, &xp, &yp);
@@ -203,8 +203,8 @@ void csEvtHandler::OnDragRight(bool WXUNUSED(draw), double x, double y, int WXUN
   wxClientDC dc(GetShape()->GetCanvas());
   GetShape()->GetCanvas()->PrepareDC(dc);
 
-  wxPen dottedPen(*wxBLACK, 1, wxDOT);
-  dc.SetLogicalFunction(OGLRBLF);
+  wxPen dottedPen(*wxBLACK, 1, wxPENSTYLE_DOT);
+  dc.SetLogicalFunction(wxINVERT);
   dc.SetPen(dottedPen);
   double xp, yp;
   GetShape()->GetAttachmentPositionEdge(attachment, &xp, &yp);
@@ -273,9 +273,9 @@ void csEvtHandler::OnDragLeft(bool draw, double x, double y, int keys, int attac
   wxClientDC dc(GetShape()->GetCanvas());
   GetShape()->GetCanvas()->PrepareDC(dc);
 
-  dc.SetLogicalFunction(OGLRBLF);
+  dc.SetLogicalFunction(wxINVERT);
 
-  wxPen dottedPen(*wxBLACK, 1, wxDOT);
+  wxPen dottedPen(*wxBLACK, 1, wxPENSTYLE_DOT);
   dc.SetPen(dottedPen);
   dc.SetBrush(* wxTRANSPARENT_BRUSH);
 
@@ -342,9 +342,9 @@ void csEvtHandler::OnBeginDragLeft(double x, double y, int keys, int attachment)
   double offsetX = xx - g_DragStartX;
   double offsetY = yy - g_DragStartY;
 
-  dc.SetLogicalFunction(OGLRBLF);
+  dc.SetLogicalFunction(wxINVERT);
 
-  wxPen dottedPen(*wxBLACK, 1, wxDOT);
+  wxPen dottedPen(*wxBLACK, 1, wxPENSTYLE_DOT);
   dc.SetPen(dottedPen);
   dc.SetBrush((* wxTRANSPARENT_BRUSH));
 
@@ -733,7 +733,7 @@ IMPLEMENT_DYNAMIC_CLASS(csThinRectangleShape, wxDrawnShape)
 csThinRectangleShape::csThinRectangleShape()
 {
     SetDrawnPen(wxBLACK_PEN);
-    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220), wxSOLID);
+    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220));
     SetDrawnBrush(brush);
 
     double w = csSTANDARD_SHAPE_WIDTH/2;
@@ -752,7 +752,7 @@ IMPLEMENT_DYNAMIC_CLASS(csWideRectangleShape, wxDrawnShape)
 csWideRectangleShape::csWideRectangleShape()
 {
     SetDrawnPen(wxBLACK_PEN);
-    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220), wxSOLID);
+    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220));
     SetDrawnBrush(brush);
 
     double w = csSTANDARD_SHAPE_WIDTH;
@@ -771,7 +771,7 @@ IMPLEMENT_DYNAMIC_CLASS(csTriangleShape, wxDrawnShape)
 csTriangleShape::csTriangleShape()
 {
     SetDrawnPen(wxBLACK_PEN);
-    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220), wxSOLID);
+    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220));
     SetDrawnBrush(brush);
 
     double w = csSTANDARD_SHAPE_WIDTH;
@@ -840,7 +840,7 @@ csSemiCircleShape::csSemiCircleShape()
     DrawRectangle(wxRect((int)(-w/2.0), (int)(-h/2.0), (int)(w), (int)(h)));
 
     SetDrawnPen(wxBLACK_PEN);
-    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220), wxSOLID);
+    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220));
     SetDrawnBrush(brush);
 
     DrawEllipticArc(wxRect((int)(-w/2), (int)(-h/2), (int)(w), (int)(2*h)), 0.0, 180.0);
@@ -922,7 +922,7 @@ IMPLEMENT_DYNAMIC_CLASS(csCircleShape, wxCircleShape)
 csCircleShape::csCircleShape()
 {
     SetPen(wxBLACK_PEN);
-    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220), wxSOLID);
+    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220));
     SetBrush(brush);
 
     SetSize(csSTANDARD_SHAPE_WIDTH*0.6, csSTANDARD_SHAPE_WIDTH*0.6);
@@ -937,7 +937,7 @@ IMPLEMENT_DYNAMIC_CLASS(csCircleShadowShape, wxCircleShape)
 csCircleShadowShape::csCircleShadowShape()
 {
     SetPen(wxBLACK_PEN);
-    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220), wxSOLID);
+    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220));
     SetBrush(brush);
 
     SetSize(csSTANDARD_SHAPE_WIDTH*0.6, csSTANDARD_SHAPE_WIDTH*0.6);
@@ -953,7 +953,7 @@ IMPLEMENT_DYNAMIC_CLASS(csOctagonShape, wxPolygonShape)
 csOctagonShape::csOctagonShape()
 {
     SetPen(wxBLACK_PEN);
-    SetBrush(wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220), wxSOLID));
+    SetBrush(wxTheBrushList->FindOrCreateBrush(wxColour(220, 220, 220)));
 
     double w = csSTANDARD_SHAPE_WIDTH*0.5;
     double h = csSTANDARD_SHAPE_WIDTH*0.5;
@@ -982,7 +982,7 @@ IMPLEMENT_DYNAMIC_CLASS(csGroupShape, wxRectangleShape)
 
 csGroupShape::csGroupShape()
 {
-    SetPen(wxThePenList->FindOrCreatePen(_T("BLACK"), 1, wxDOT));
+    SetPen(wxThePenList->FindOrCreatePen(_T("BLACK"), 1, wxPENSTYLE_DOT));
     SetBrush(wxTRANSPARENT_BRUSH);
 
     SetSize(csSTANDARD_SHAPE_WIDTH, csSTANDARD_SHAPE_WIDTH);

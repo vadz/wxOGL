@@ -394,7 +394,7 @@ void csDiagramView::OnChangeBackgroundColour(wxCommandEvent& WXUNUSED(event))
         {
           wxColourData retData = dialog->GetColourData();
           wxColour col = retData.GetColour();
-          theBrush = wxTheBrushList->FindOrCreateBrush(col, wxSOLID);
+          theBrush = wxTheBrushList->FindOrCreateBrush(col);
         }
         dialog->Close(true);
         if (!theBrush)
@@ -847,7 +847,7 @@ csCanvas::~csCanvas(void)
 
 void csCanvas::DrawOutline(wxDC& dc, double x1, double y1, double x2, double y2)
 {
-    wxPen dottedPen(*wxBLACK, 1, wxDOT);
+    wxPen dottedPen(*wxBLACK, 1, wxPENSTYLE_DOT);
     dc.SetPen(dottedPen);
     dc.SetBrush(* wxTRANSPARENT_BRUSH);
 
@@ -964,7 +964,7 @@ void csCanvas::OnDragLeft(bool WXUNUSED(draw), double x, double y, int WXUNUSED(
     wxClientDC dc(this);
     PrepareDC(dc);
 
-    dc.SetLogicalFunction(OGLRBLF);
+    dc.SetLogicalFunction(wxINVERT);
     DrawOutline(dc, sg_initialX, sg_initialY, x, y);
 }
 
@@ -976,7 +976,7 @@ void csCanvas::OnBeginDragLeft(double x, double y, int WXUNUSED(keys))
     wxClientDC dc(this);
     PrepareDC(dc);
 
-    dc.SetLogicalFunction(OGLRBLF);
+    dc.SetLogicalFunction(wxINVERT);
     DrawOutline(dc, sg_initialX, sg_initialY, x, y);
     CaptureMouse();
 }

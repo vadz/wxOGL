@@ -501,8 +501,8 @@ void MyEvtHandler::OnBeginDragRight(double x, double y, int WXUNUSED(keys), int 
   wxClientDC dc(GetShape()->GetCanvas());
   GetShape()->GetCanvas()->PrepareDC(dc);
 
-  wxPen dottedPen(*wxBLACK, 1, wxDOT);
-  dc.SetLogicalFunction(OGLRBLF);
+  wxPen dottedPen(*wxBLACK, 1, wxPENSTYLE_DOT);
+  dc.SetLogicalFunction(wxINVERT);
   dc.SetPen(dottedPen);
   double xp, yp;
   GetShape()->GetAttachmentPosition(attachment, &xp, &yp);
@@ -518,8 +518,8 @@ void MyEvtHandler::OnDragRight(bool WXUNUSED(draw), double x, double y, int WXUN
   wxClientDC dc(GetShape()->GetCanvas());
   GetShape()->GetCanvas()->PrepareDC(dc);
 
-  wxPen dottedPen(*wxBLACK, 1, wxDOT);
-  dc.SetLogicalFunction(OGLRBLF);
+  wxPen dottedPen(*wxBLACK, 1, wxPENSTYLE_DOT);
+  dc.SetLogicalFunction(wxINVERT);
   dc.SetPen(dottedPen);
   double xp, yp;
   GetShape()->GetAttachmentPosition(attachment, &xp, &yp);
