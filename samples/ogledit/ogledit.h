@@ -13,7 +13,7 @@
 #define _OGLSAMPLE_OGLEDIT_H_
 
 #include "wx/docview.h"
-#include "wx/ogl/ogl.h" // base header of OGL, includes and adjusts wx/deprecated/setup.h
+#include "wx/ogl/ogl.h"
 
 // Define a new application
 class MyFrame;
@@ -49,10 +49,10 @@ public:
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxDefaultSize,
             long style = wxDEFAULT_FRAME_STYLE);
+    virtual ~MyFrame();
 
     MyCanvas *CreateCanvas(wxView *view, wxFrame *parent);
     void OnSize(wxSizeEvent& event);
-    void OnCloseWindow(wxCloseEvent& event);
     void OnAbout(wxCommandEvent& event);
 
 DECLARE_EVENT_TABLE()
