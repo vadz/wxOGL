@@ -333,20 +333,20 @@ void csApp::InitToolBar(wxToolBar* toolBar)
     bitmaps[8] = new wxBitmap( undo_xpm );
     bitmaps[9] = new wxBitmap( redo_xpm );
 
-    toolBar->AddTool(wxID_NEW, *bitmaps[0], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("New file"));
-    toolBar->AddTool(wxID_OPEN, *bitmaps[1], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Open file"));
-    toolBar->AddTool(wxID_SAVE, *bitmaps[2], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Save file"));
+    toolBar->AddTool(wxID_NEW, "", *bitmaps[0], _T("New file"));
+    toolBar->AddTool(wxID_OPEN, "", *bitmaps[1], _T("Open file"));
+    toolBar->AddTool(wxID_SAVE, "", *bitmaps[2], _T("Save file"));
     toolBar->AddSeparator();
-    toolBar->AddTool(wxID_PRINT, *bitmaps[6], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Print"));
+    toolBar->AddTool(wxID_PRINT, "", *bitmaps[6], _T("Print"));
     toolBar->AddSeparator();
-    toolBar->AddTool(wxID_COPY, *bitmaps[3], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Copy"));
-    toolBar->AddTool(wxID_CUT, *bitmaps[4], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Cut"));
-    toolBar->AddTool(wxID_PASTE, *bitmaps[5], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Paste"));
+    toolBar->AddTool(wxID_COPY, "", *bitmaps[3], _T("Copy"));
+    toolBar->AddTool(wxID_CUT, "", *bitmaps[4], _T("Cut"));
+    toolBar->AddTool(wxID_PASTE, "", *bitmaps[5], _T("Paste"));
     toolBar->AddSeparator();
-    toolBar->AddTool(wxID_UNDO, *bitmaps[8], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Undo"));
-    toolBar->AddTool(wxID_REDO, *bitmaps[9], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Redo"));
+    toolBar->AddTool(wxID_UNDO, "", *bitmaps[8], _T("Undo"));
+    toolBar->AddTool(wxID_REDO, "", *bitmaps[9], _T("Redo"));
     toolBar->AddSeparator();
-    toolBar->AddTool(wxID_HELP, *bitmaps[7], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Help"));
+    toolBar->AddTool(wxID_HELP, "", *bitmaps[7], _T("Help"));
 
     toolBar->Realize();
 
@@ -391,18 +391,18 @@ void csApp::CreateDiagramToolBar(wxFrame* parent)
     bitmaps[9] = new wxBitmap( cutpoint_xpm );
     bitmaps[10] = new wxBitmap( straight_xpm );
 
-    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_ALIGNL, *bitmaps[0], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Align left"));
-    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_ALIGNR, *bitmaps[1], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Align right"));
-    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_ALIGNT, *bitmaps[2], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Align top"));
-    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_ALIGNB, *bitmaps[3], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Align bottom"));
-    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_ALIGN_HORIZ, *bitmaps[4], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Align horizontally"));
-    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_ALIGN_VERT, *bitmaps[5], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Align vertically"));
-    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_COPY_SIZE, *bitmaps[6], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Copy size"));
+    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_ALIGNL, "", *bitmaps[0], _T("Align left"));
+    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_ALIGNR, "", *bitmaps[1], _T("Align right"));
+    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_ALIGNT, "", *bitmaps[2], _T("Align top"));
+    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_ALIGNB, "", *bitmaps[3], _T("Align bottom"));
+    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_ALIGN_HORIZ, "", *bitmaps[4], _T("Align horizontally"));
+    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_ALIGN_VERT, "", *bitmaps[5], _T("Align vertically"));
+    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_COPY_SIZE, "", *bitmaps[6], _T("Copy size"));
     m_diagramToolBar->AddSeparator();
-    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_LINE_ARROW, *bitmaps[7], wxNullBitmap, true, wxDefaultCoord, wxDefaultCoord, NULL, _T("Toggle arrow"));
-    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_NEW_POINT, *bitmaps[8], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("New line point"));
-    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_CUT_POINT, *bitmaps[9], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Cut line point"));
-    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_STRAIGHTEN, *bitmaps[10], wxNullBitmap, false, wxDefaultCoord, wxDefaultCoord, NULL, _T("Straighten lines"));
+    m_diagramToolBar->AddCheckTool(DIAGRAM_TOOLBAR_LINE_ARROW, "", *bitmaps[7], wxNullBitmap, _T("Toggle arrow"));
+    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_NEW_POINT, "", *bitmaps[8], _T("New line point"));
+    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_CUT_POINT, "", *bitmaps[9], _T("Cut line point"));
+    m_diagramToolBar->AddTool(DIAGRAM_TOOLBAR_STRAIGHTEN, "", *bitmaps[10], _T("Straighten lines"));
 
     m_diagramToolBar->Realize();
 
