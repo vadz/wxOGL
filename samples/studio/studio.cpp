@@ -21,7 +21,7 @@
 #include "wx/mdi.h"
 #endif
 
-#include "wx/ogl/ogl.h" // base header of OGL, includes and adjusts wx/deprecated/setup.h
+#include "wx/ogl/ogl.h"
 
 #include "wx/config.h"
 #include "wx/laywin.h"

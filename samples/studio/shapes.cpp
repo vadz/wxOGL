@@ -24,7 +24,7 @@
 #error You must set wxUSE_DOC_VIEW_ARCHITECTURE to 1 in wx_setup.h!
 #endif
 
-#include "wx/ogl/ogl.h" // base header of OGL, includes and adjusts wx/deprecated/setup.h
+#include "wx/ogl/ogl.h"
 
 #include "studio.h"
 #include "doc.h"

@@ -16,11 +16,7 @@
 #include "wx/cmdproc.h"
 #include "wx/string.h"
 
-#include "wx/ogl/ogl.h" // base header of OGL, includes and adjusts wx/deprecated/setup.h
-
-#if wxUSE_PROLOGIO
-#include "wx/deprecated/wxexpr.h"
-#endif
+#include "wx/ogl/ogl.h"
 
 #include "wx/ogl/ogl.h"
 
