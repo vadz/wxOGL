@@ -12,7 +12,11 @@
 #ifndef _OGL_CANVAS_H_
 #define _OGL_CANVAS_H_
 
+#include "wx/ogl/defs.h"
+
+#include "wx/dcclient.h"
 #include "wx/overlay.h"
+#include "wx/scrolwin.h"
 
 // Drag states
 #define NoDragging             0
@@ -26,6 +30,7 @@ WXDLLIMPEXP_OGL extern const wxChar* wxShapeCanvasNameStr;
 // When drag_count reaches 0, process drag message
 
 class WXDLLIMPEXP_OGL wxDiagram;
+class WXDLLIMPEXP_OGL wxShape;
 
 class WXDLLIMPEXP_OGL wxShapeCanvas: public wxScrolledWindow
 {
