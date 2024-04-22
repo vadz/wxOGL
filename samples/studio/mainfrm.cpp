@@ -222,10 +222,6 @@ void csFrame::OnSaveUpdate(wxUpdateUIEvent& event)
  * Child frame
  */
 
-BEGIN_EVENT_TABLE(csMDIChildFrame, wxDocMDIChildFrame)
-  EVT_ACTIVATE(csMDIChildFrame::OnActivate)
-END_EVENT_TABLE()
-
 csMDIChildFrame::csMDIChildFrame(wxDocument* doc, wxView* view, wxMDIParentFrame *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
   wxDocMDIChildFrame(doc, view, parent, id, title, pos, size, style)
 {
@@ -261,19 +257,4 @@ csMDIChildFrame::csMDIChildFrame(wxDocument* doc, wxView* view, wxMDIParentFrame
 
     wxAcceleratorTable accel(18, entries);
     SetAcceleratorTable(accel);
-}
-
-void csMDIChildFrame::OnActivate(wxActivateEvent& event)
-{
-    wxDocMDIChildFrame::OnActivate(event);
-/*
-    wxSashLayoutWindow* win = wxGetApp().GetDiagramPaletteSashWindow();
-    if (!win)
-        return;
-
-    win->Show(event.GetActive());
-
-    wxLayoutAlgorithm layout;
-    layout.LayoutMDIFrame((wxMDIParentFrame*) GetParent());
-*/
 }

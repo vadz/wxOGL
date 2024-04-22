@@ -44,10 +44,6 @@ class csMDIChildFrame: public wxDocMDIChildFrame
 {
   public:
     csMDIChildFrame(wxDocument* doc, wxView* view, wxMDIParentFrame *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style);
-
-    void OnActivate(wxActivateEvent& event);
-
-DECLARE_EVENT_TABLE()
 };
 
 #endif
