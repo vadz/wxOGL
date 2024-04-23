@@ -155,7 +155,7 @@ class WXDLLIMPEXP_OGL wxLineShape: public wxShape
 
   // Make a given number of control points
   virtual void MakeLineControlPoints(int n);
-  virtual void InsertLineControlPoint(wxDC* dc);
+  virtual void InsertLineControlPoint();
   virtual bool DeleteLineControlPoint();
   virtual void Initialise();
   inline wxList *GetLineControlPoints() { return m_lineControlPoints; }
@@ -245,6 +245,11 @@ class WXDLLIMPEXP_OGL wxLineShape: public wxShape
   // (depending on whether the node object is at start or end)
   wxRealPoint *GetNextControlPoint(wxShape *nodeObject);
   inline bool IsEnd(wxShape *nodeObject) const { return (m_to == nodeObject); }
+
+
+  // Deprecated functions kept for compatibility.
+  wxDEPRECATED_MSG("just remove wxDC argument, it is not used")
+  void InsertLineControlPoint(wxDC* WXUNUSED(dc)) { InsertLineControlPoint(); }
 
 private:
   // Set line end points to route the line between m_from and m_to, which must

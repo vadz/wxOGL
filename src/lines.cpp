@@ -112,11 +112,8 @@ void wxLineShape::MakeLineControlPoints(int n)
   }
 }
 
-void wxLineShape::InsertLineControlPoint(wxDC* dc)
+void wxLineShape::InsertLineControlPoint()
 {
-    if (dc)
-        Erase(*dc);
-
   const auto last = m_lineControlPoints->GetLast();
   const auto second_last = last->GetPrevious();
   wxRealPoint *last_point = (wxRealPoint *)last->GetData();
