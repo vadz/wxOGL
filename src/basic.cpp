@@ -392,19 +392,11 @@ void wxShape::SetDrawHandles(bool drawH)
 
 void wxShape::SetShadowMode(int mode, bool redraw)
 {
+  m_shadowMode = mode;
+
   if (redraw && GetCanvas())
   {
-    wxClientDC dc(GetCanvas());
-    GetCanvas()->PrepareDC(dc);
-    Erase(dc);
-
-    m_shadowMode = mode;
-
-    Draw(dc);
-  }
-  else
-  {
-    m_shadowMode = mode;
+    GetCanvas()->Refresh();
   }
 }
 
@@ -1484,7 +1476,7 @@ void wxShape::Move(wxDC& dc, double x, double y, bool display)
   ResetControlPoints();
 
   if (display)
-    Draw(dc);
+    GetCanvas()->Refresh();
 
   MoveLinks(dc);
 
