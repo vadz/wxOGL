@@ -1025,16 +1025,6 @@ void wxLineShape::OnMoveLink(wxDC& dc, bool moveControlPoints)
 
     FindLineEndPoints(&end_x, &end_y, &other_end_x, &other_end_y);
 
-    const auto first = m_lineControlPoints->GetFirst();
-    /* wxRealPoint *first_point = */ (wxRealPoint *)first->GetData();
-    const auto last = m_lineControlPoints->GetLast();
-    /* wxRealPoint *last_point = */ (wxRealPoint *)last->GetData();
-
-/* This is redundant, surely? Done by SetEnds.
-    first_point->x = end_x; first_point->y = end_y;
-    last_point->x = other_end_x; last_point->y = other_end_y;
-*/
-
     double oldX = m_xpos;
     double oldY = m_ypos;
 
