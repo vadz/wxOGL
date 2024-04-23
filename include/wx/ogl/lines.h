@@ -247,6 +247,10 @@ class WXDLLIMPEXP_OGL wxLineShape: public wxShape
   inline bool IsEnd(wxShape *nodeObject) const { return (m_to == nodeObject); }
 
 private:
+  // Set line end points to route the line between m_from and m_to, which must
+  // both be valid if this function is called.
+  void RouteLine();
+
   bool              m_erasing;              // flag to say whether we're erasing or drawing
                                             // this line (really so metafiles can draw a
                                             // blank rectangle)

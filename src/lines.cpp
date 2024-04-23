@@ -1010,11 +1010,8 @@ bool wxLineShape::OnMovePre(wxDC& dc, double x, double y, double old_x, double o
   return true;
 }
 
-void wxLineShape::OnMoveLink(wxDC& dc, bool moveControlPoints)
+void wxLineShape::RouteLine()
 {
-  if (!m_from || !m_to)
-   return;
-
     if (m_lineControlPoints->GetCount() > 2)
       Initialise();
 
@@ -1025,14 +1022,22 @@ void wxLineShape::OnMoveLink(wxDC& dc, bool moveControlPoints)
 
     FindLineEndPoints(&end_x, &end_y, &other_end_x, &other_end_y);
 
-    double oldX = m_xpos;
-    double oldY = m_ypos;
-
     SetEnds(end_x, end_y, other_end_x, other_end_y);
 
     // Do a second time, because one may depend on the other.
     FindLineEndPoints(&end_x, &end_y, &other_end_x, &other_end_y);
     SetEnds(end_x, end_y, other_end_x, other_end_y);
+}
+
+void wxLineShape::OnMoveLink(wxDC& dc, bool moveControlPoints)
+{
+  if (!m_from || !m_to)
+   return;
+
+    double oldX = m_xpos;
+    double oldY = m_ypos;
+
+    RouteLine();
 
     // Try to move control points with the arc
     double x_offset = m_xpos - oldX;
@@ -1273,12 +1278,22 @@ void wxLineShape::OnDrawContents(wxDC& dc)
 
 void wxLineShape::SetTo(wxShape *object)
 {
+  auto const oldTo = m_to;
+
   m_to = object;
+
+  if (!oldTo && m_from)
+    RouteLine();
 }
 
 void wxLineShape::SetFrom(wxShape *object)
 {
+  auto const oldFrom = m_from;
+
   m_from = object;
+
+  if (!oldFrom && m_to)
+    RouteLine();
 }
 
 void wxLineShape::MakeControlPoints()

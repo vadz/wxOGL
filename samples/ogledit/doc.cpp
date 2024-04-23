@@ -283,11 +283,6 @@ bool DiagramCommand::Do(void)
       wxClientDC dc(theShape->GetCanvas());
       theShape->GetCanvas()->PrepareDC(dc);
 
-      // It won't get drawn properly unless you move both
-      // connected images
-      fromShape->Move(dc, fromShape->GetX(), fromShape->GetY());
-      toShape->Move(dc, toShape->GetX(), toShape->GetY());
-
       shape = theShape;
       deleteShape = false;
 
