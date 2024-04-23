@@ -15,7 +15,8 @@ Building
 Under Unix, use CMake to build as usual. The library can be built as either a
 static or shared library using the standard CMake `BUILD_SHARED_LIBS` variable.
 
-Under Windows, MSVS project files will be provided soon.
+Under Windows, open `build/msvs/ogl.sln` with MSVS 2022 and build. Only static
+libraries are supported under this platform currently.
 
 
 Using
