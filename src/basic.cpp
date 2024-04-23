@@ -316,6 +316,8 @@ wxShape::~wxShape()
   ClearRegions();
   ClearAttachments();
 
+  DeleteControlPoints();
+
   if (m_canvas)
     m_canvas->RemoveShape(this);
 
