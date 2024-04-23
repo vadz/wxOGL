@@ -82,8 +82,6 @@ void wxDiagram::Redraw(wxDC& dc)
 {
   if (m_shapeList)
   {
-    if (GetCanvas())
-      GetCanvas()->SetCursor(* wxHOURGLASS_CURSOR);
     auto current = m_shapeList->GetFirst();
 
     while (current)
@@ -94,8 +92,6 @@ void wxDiagram::Redraw(wxDC& dc)
 
       current = current->GetNext();
     }
-    if (GetCanvas())
-      GetCanvas()->SetCursor(* wxSTANDARD_CURSOR);
   }
 }
 
