@@ -52,8 +52,6 @@ wxLineShape::wxLineShape()
   m_alignmentStart = 0;
   m_alignmentEnd = 0;
 
-  m_lineControlPoints = nullptr;
-
   // Clear any existing regions (created in an earlier constructor)
   // and make the three line regions.
   ClearRegions();
@@ -78,11 +76,6 @@ wxLineShape::wxLineShape()
 
 wxLineShape::~wxLineShape()
 {
-  if (m_lineControlPoints)
-  {
-    ClearPointList(*m_lineControlPoints);
-    delete m_lineControlPoints;
-  }
   for (int i = 0; i < 3; i++)
   {
     if (m_labelObjects[i])
@@ -98,85 +91,69 @@ wxLineShape::~wxLineShape()
 
 void wxLineShape::MakeLineControlPoints(int n)
 {
-  if (m_lineControlPoints)
-  {
-    ClearPointList(*m_lineControlPoints);
-    delete m_lineControlPoints;
-  }
-  m_lineControlPoints = new wxList;
-
-  for (int i = 0; i < n; i++)
-  {
-    wxRealPoint *point = new wxRealPoint(-999, -999);
-    m_lineControlPoints->Append((wxObject*) point);
-  }
+  wxOGLPoints points(n, wxRealPoint(-999, -999));
+  m_lineControlPoints.swap(points);
 }
 
 void wxLineShape::InsertLineControlPoint()
 {
-  const auto last = m_lineControlPoints->GetLast();
-  const auto second_last = last->GetPrevious();
-  wxRealPoint *last_point = (wxRealPoint *)last->GetData();
-  wxRealPoint *second_last_point = (wxRealPoint *)second_last->GetData();
+  const auto last = m_lineControlPoints.rbegin();
+  const auto second_last = last + 1;
+  const wxRealPoint last_point = *last;
+  const wxRealPoint second_last_point = *second_last;
 
   // Choose a point half way between the last and penultimate points
-  double line_x = ((last_point->x + second_last_point->x)/2);
-  double line_y = ((last_point->y + second_last_point->y)/2);
+  double line_x = ((last_point.x + second_last_point.x)/2);
+  double line_y = ((last_point.y + second_last_point.y)/2);
 
-  wxRealPoint *point = new wxRealPoint(line_x, line_y);
-  m_lineControlPoints->Insert(last, (wxObject*) point);
+  m_lineControlPoints.insert(last.base(), wxRealPoint(line_x, line_y));
 }
 
 bool wxLineShape::DeleteLineControlPoint()
 {
-  if (m_lineControlPoints->GetCount() < 3)
+  if (m_lineControlPoints.size() < 3)
     return false;
 
-  const auto last = m_lineControlPoints->GetLast();
-  const auto second_last = last->GetPrevious();
+  const auto last = m_lineControlPoints.rbegin();
+  const auto second_last = last + 1;
 
-  wxRealPoint *second_last_point = (wxRealPoint *)second_last->GetData();
-  delete second_last_point;
-  m_lineControlPoints->Erase(second_last);
+  m_lineControlPoints.erase(second_last.base());
 
   return true;
 }
 
 void wxLineShape::Initialise()
 {
-  if (m_lineControlPoints)
+  if (!m_lineControlPoints.empty())
   {
     // Just move the first and last control points
-    const auto first = m_lineControlPoints->GetFirst();
-    wxRealPoint *first_point = (wxRealPoint *)first->GetData();
+    const auto first = m_lineControlPoints.begin();
+    const wxRealPoint first_point = *first;
 
-    const auto last = m_lineControlPoints->GetLast();
-    wxRealPoint *last_point = (wxRealPoint *)last->GetData();
+    const auto last = m_lineControlPoints.rbegin();
+    const wxRealPoint last_point = *last;
 
     // If any of the line points are at -999, we must
     // initialize them by placing them half way between the first
     // and the last.
-    auto node = first->GetNext();
-    while (node)
+    for (auto& point: m_lineControlPoints)
     {
-      wxRealPoint *point = (wxRealPoint *)node->GetData();
-      if (point->x == -999)
+      if (point.x == -999)
       {
         double x1, y1, x2, y2;
-        if (first_point->x < last_point->x)
-          { x1 = first_point->x; x2 = last_point->x; }
+        if (first_point.x < last_point.x)
+          { x1 = first_point.x; x2 = last_point.x; }
         else
-          { x2 = first_point->x; x1 = last_point->x; }
+          { x2 = first_point.x; x1 = last_point.x; }
 
-        if (first_point->y < last_point->y)
-          { y1 = first_point->y; y2 = last_point->y; }
+        if (first_point.y < last_point.y)
+          { y1 = first_point.y; y2 = last_point.y; }
         else
-          { y2 = first_point->y; y1 = last_point->y; }
+          { y2 = first_point.y; y1 = last_point.y; }
 
-        point->x = ((x2 - x1)/2 + x1);
-        point->y = ((y2 - y1)/2 + y1);
+        point.x = ((x2 - x1)/2 + x1);
+        point.y = ((y2 - y1)/2 + y1);
       }
-      node = node->GetNext();
     }
   }
 }
@@ -317,33 +294,31 @@ void wxLineShape::GetLabelPosition(int position, double *x, double *y)
     case 0:
     {
       // Want to take the middle section for the label
-      int n = m_lineControlPoints->GetCount();
+      int n = m_lineControlPoints.size();
       int half_way = (int)(n/2);
 
       // Find middle of this line
-      const auto node = m_lineControlPoints->Item(half_way - 1);
-      wxRealPoint *point = (wxRealPoint *)node->GetData();
-      const auto next_node = node->GetNext();
-      wxRealPoint *next_point = (wxRealPoint *)next_node->GetData();
+      const wxRealPoint point = m_lineControlPoints.at(half_way - 1);
+      const wxRealPoint next_point = m_lineControlPoints.at(half_way);
 
-      double dx = (next_point->x - point->x);
-      double dy = (next_point->y - point->y);
-      *x = (double)(point->x + dx/2.0);
-      *y = (double)(point->y + dy/2.0);
+      double dx = (next_point.x - point.x);
+      double dy = (next_point.y - point.y);
+      *x = (double)(point.x + dx/2.0);
+      *y = (double)(point.y + dy/2.0);
       break;
     }
     case 1:
     {
-      const auto node = m_lineControlPoints->GetFirst();
-      *x = ((wxRealPoint *)node->GetData())->x;
-      *y = ((wxRealPoint *)node->GetData())->y;
+      const auto first = m_lineControlPoints.front();
+      *x = first.x;
+      *y = first.y;
       break;
     }
     case 2:
     {
-      const auto node = m_lineControlPoints->GetLast();
-      *x = ((wxRealPoint *)node->GetData())->x;
-      *y = ((wxRealPoint *)node->GetData())->y;
+      const auto last = m_lineControlPoints.back();
+      *x = last.x;
+      *y = last.y;
       break;
     }
     default:
@@ -356,45 +331,42 @@ void wxLineShape::GetLabelPosition(int position, double *x, double *y)
  * make it so.
  *
  */
-void GraphicsStraightenLine(wxRealPoint *point1, wxRealPoint *point2)
+void GraphicsStraightenLine(wxRealPoint& point1, wxRealPoint& point2)
 {
-  double dx = point2->x - point1->x;
-  double dy = point2->y - point1->y;
+  double dx = point2.x - point1.x;
+  double dy = point2.y - point1.y;
 
   if (dx == 0.0)
     return;
   else if (fabs(dy/dx) > 1.0)
   {
-    point2->x = point1->x;
+    point2.x = point1.x;
   }
-  else point2->y = point1->y;
+  else point2.y = point1.y;
 }
 
 void wxLineShape::Straighten(wxDC *dc)
 {
-  if (!m_lineControlPoints || m_lineControlPoints->GetCount() < 3)
+  if (m_lineControlPoints.size() < 3)
     return;
 
   if (dc)
     Erase(* dc);
 
-  const auto first_point_node = m_lineControlPoints->GetFirst();
-  const auto last_point_node = m_lineControlPoints->GetLast();
-  const auto second_last_point_node = last_point_node->GetPrevious();
+  const auto last_point_iter = m_lineControlPoints.rbegin().base();
+  const auto second_last_point_iter = last_point_iter - 1;
 
-  wxRealPoint *last_point = (wxRealPoint *)last_point_node->GetData();
-  wxRealPoint *second_last_point = (wxRealPoint *)second_last_point_node->GetData();
+  wxRealPoint& last_point = *last_point_iter;
+  wxRealPoint& second_last_point = *second_last_point_iter;
 
   GraphicsStraightenLine(last_point, second_last_point);
 
-  auto node = first_point_node;
-  while (node && (node != second_last_point_node))
+  for (auto iter = m_lineControlPoints.begin(); iter != second_last_point_iter;)
   {
-    wxRealPoint *point = (wxRealPoint *)node->GetData();
-    wxRealPoint *next_point = (wxRealPoint *)(node->GetNext()->GetData());
+    wxRealPoint& point = *iter++;
+    wxRealPoint& next_point = *iter;
 
     GraphicsStraightenLine(point, next_point);
-    node = node->GetNext();
   }
 
   if (dc)
@@ -415,15 +387,13 @@ void wxLineShape::Unlink()
 void wxLineShape::SetEnds(double x1, double y1, double x2, double y2)
 {
   // Find centre point
-  const auto first_point_node = m_lineControlPoints->GetFirst();
-  const auto last_point_node = m_lineControlPoints->GetLast();
-  wxRealPoint *first_point = (wxRealPoint *)first_point_node->GetData();
-  wxRealPoint *last_point = (wxRealPoint *)last_point_node->GetData();
+  wxRealPoint& first_point = m_lineControlPoints.front();
+  wxRealPoint& last_point = m_lineControlPoints.back();
 
-  first_point->x = x1;
-  first_point->y = y1;
-  last_point->x = x2;
-  last_point->y = y2;
+  first_point.x = x1;
+  first_point.y = y1;
+  last_point.x = x2;
+  last_point.y = y2;
 
   m_xpos = (double)((x1 + x2)/2.0);
   m_ypos = (double)((y1 + y2)/2.0);
@@ -432,13 +402,11 @@ void wxLineShape::SetEnds(double x1, double y1, double x2, double y2)
 // Get absolute positions of ends
 void wxLineShape::GetEnds(double *x1, double *y1, double *x2, double *y2)
 {
-  const auto first_point_node = m_lineControlPoints->GetFirst();
-  const auto last_point_node = m_lineControlPoints->GetLast();
-  wxRealPoint *first_point = (wxRealPoint *)first_point_node->GetData();
-  wxRealPoint *last_point = (wxRealPoint *)last_point_node->GetData();
+  const wxRealPoint& first_point = m_lineControlPoints.front();
+  const wxRealPoint& last_point = m_lineControlPoints.back();
 
-  *x1 = first_point->x; *y1 = first_point->y;
-  *x2 = last_point->x; *y2 = last_point->y;
+  *x1 = first_point.x; *y1 = first_point.y;
+  *x2 = last_point.x; *y2 = last_point.y;
 }
 
 void wxLineShape::SetAttachments(int from_attach, int to_attach)
@@ -449,7 +417,7 @@ void wxLineShape::SetAttachments(int from_attach, int to_attach)
 
 bool wxLineShape::HitTest(double x, double y, int *attachment, double *distance)
 {
-  if (!m_lineControlPoints)
+  if (m_lineControlPoints.empty())
     return false;
 
   // Look at label regions in case mouse is over a label
@@ -482,23 +450,24 @@ bool wxLineShape::HitTest(double x, double y, int *attachment, double *distance)
     }
   }
 
-  auto node = m_lineControlPoints->GetFirst();
-
-  while (node && node->GetNext())
+  for (auto iter = m_lineControlPoints.begin();;)
   {
-    wxRealPoint *point1 = (wxRealPoint *)node->GetData();
-    wxRealPoint *point2 = (wxRealPoint *)node->GetNext()->GetData();
+    const wxRealPoint& point1 = *iter++;
+    if ( iter == m_lineControlPoints.end() )
+      break;
+
+    const wxRealPoint& point2 = *iter;
 
     // For inaccurate mousing allow 8 pixel corridor
     int extra = 4;
 
-    double dx = point2->x - point1->x;
-    double dy = point2->y - point1->y;
+    double dx = point2.x - point1.x;
+    double dy = point2.y - point1.y;
     double seg_len = sqrt(dx*dx+dy*dy);
     double distance_from_seg =
-      seg_len*((x-point1->x)*dy-(y-point1->y)*dx)/(dy*dy+dx*dx);
+      seg_len*((x-point1.x)*dy-(y-point1.y)*dx)/(dy*dy+dx*dx);
     double distance_from_prev =
-      seg_len*((y-point1->y)*dy+(x-point1->x)*dx)/(dy*dy+dx*dx);
+      seg_len*((y-point1.y)*dy+(x-point1.x)*dx)/(dy*dy+dx*dx);
 
     if ((fabs(distance_from_seg) < extra &&
          distance_from_prev >= 0 && distance_from_prev <= seg_len)
@@ -508,8 +477,6 @@ bool wxLineShape::HitTest(double x, double y, int *attachment, double *distance)
       *distance = distance_from_seg;
       return true;
     }
-
-    node = node->GetNext();
   }
   return false;
 }
@@ -569,15 +536,11 @@ void wxLineShape::DrawArrows(wxDC& dc)
 
 void wxLineShape::DrawArrow(wxDC& dc, wxArrowHead *arrow, double xOffset, bool proportionalOffset)
 {
-  const auto first_line_node = m_lineControlPoints->GetFirst();
-  wxRealPoint *first_line_point = (wxRealPoint *)first_line_node->GetData();
-  const auto second_line_node = first_line_node->GetNext();
-  wxRealPoint *second_line_point = (wxRealPoint *)second_line_node->GetData();
+  const wxRealPoint& first_line_point = m_lineControlPoints.front();
+  const wxRealPoint& second_line_point = m_lineControlPoints.at(1);
 
-  const auto last_line_node = m_lineControlPoints->GetLast();
-  wxRealPoint *last_line_point = (wxRealPoint *)last_line_node->GetData();
-  const auto second_last_line_node = last_line_node->GetPrevious();
-  wxRealPoint *second_last_line_point = (wxRealPoint *)second_last_line_node->GetData();
+  const wxRealPoint& last_line_point = m_lineControlPoints.back();
+  const wxRealPoint& second_last_line_point = m_lineControlPoints.at(m_lineControlPoints.size() - 2);
 
   // Position where we want to start drawing
   double positionOnLineX = 0.0, positionOnLineY = 0.0;
@@ -595,15 +558,15 @@ void wxLineShape::DrawArrow(wxDC& dc, wxArrowHead *arrow, double xOffset, bool p
       if (proportionalOffset)
       {
         double totalLength =
-          (double)sqrt((second_line_point->x - first_line_point->x)*(second_line_point->x - first_line_point->x) +
-                      (second_line_point->y - first_line_point->y)*(second_line_point->y - first_line_point->y));
+          (double)sqrt((second_line_point.x - first_line_point.x)*(second_line_point.x - first_line_point.x) +
+                      (second_line_point.y - first_line_point.y)*(second_line_point.y - first_line_point.y));
         realOffset = (double)(xOffset * totalLength);
       }
-      GetPointOnLine(second_line_point->x, second_line_point->y,
-                     first_line_point->x, first_line_point->y,
+      GetPointOnLine(second_line_point.x, second_line_point.y,
+                     first_line_point.x, first_line_point.y,
                      realOffset, &positionOnLineX, &positionOnLineY);
-      startPositionX = second_line_point->x;
-      startPositionY = second_line_point->y;
+      startPositionX = second_line_point.x;
+      startPositionY = second_line_point.y;
       break;
     }
     case ARROW_POSITION_END:
@@ -614,22 +577,22 @@ void wxLineShape::DrawArrow(wxDC& dc, wxArrowHead *arrow, double xOffset, bool p
       if (proportionalOffset)
       {
         double totalLength =
-          (double)sqrt((second_last_line_point->x - last_line_point->x)*(second_last_line_point->x - last_line_point->x) +
-                      (second_last_line_point->y - last_line_point->y)*(second_last_line_point->y - last_line_point->y));
+          (double)sqrt((second_last_line_point.x - last_line_point.x)*(second_last_line_point.x - last_line_point.x) +
+                      (second_last_line_point.y - last_line_point.y)*(second_last_line_point.y - last_line_point.y));
         realOffset = (double)(xOffset * totalLength);
       }
-      GetPointOnLine(second_last_line_point->x, second_last_line_point->y,
-                     last_line_point->x, last_line_point->y,
+      GetPointOnLine(second_last_line_point.x, second_last_line_point.y,
+                     last_line_point.x, last_line_point.y,
                      realOffset, &positionOnLineX, &positionOnLineY);
-      startPositionX = second_last_line_point->x;
-      startPositionY = second_last_line_point->y;
+      startPositionX = second_last_line_point.x;
+      startPositionY = second_last_line_point.y;
       break;
     }
     case ARROW_POSITION_MIDDLE:
     {
       // Choose a point half way between the last and penultimate points
-      double x = ((last_line_point->x + second_last_line_point->x)/2);
-      double y = ((last_line_point->y + second_last_line_point->y)/2);
+      double x = ((last_line_point.x + second_last_line_point.x)/2);
+      double y = ((last_line_point.y + second_last_line_point.y)/2);
 
       // If we're using a proportional offset, calculate just where this will
       // be on the line.
@@ -637,15 +600,15 @@ void wxLineShape::DrawArrow(wxDC& dc, wxArrowHead *arrow, double xOffset, bool p
       if (proportionalOffset)
       {
         double totalLength =
-          (double)sqrt((second_last_line_point->x - x)*(second_last_line_point->x - x) +
-                      (second_last_line_point->y - y)*(second_last_line_point->y - y));
+          (double)sqrt((second_last_line_point.x - x)*(second_last_line_point.x - x) +
+                      (second_last_line_point.y - y)*(second_last_line_point.y - y));
         realOffset = (double)(xOffset * totalLength);
       }
 
-      GetPointOnLine(second_last_line_point->x, second_last_line_point->y,
+      GetPointOnLine(second_last_line_point.x, second_last_line_point.y,
                      x, y, realOffset, &positionOnLineX, &positionOnLineY);
-      startPositionX = second_last_line_point->x;
-      startPositionY = second_last_line_point->y;
+      startPositionX = second_last_line_point.x;
+      startPositionY = second_last_line_point.y;
       break;
     }
   }
@@ -882,17 +845,12 @@ void wxLineShape::GetBoundingBoxMin(double *w, double *h)
   double x2 = -10000;
   double y2 = -10000;
 
-  auto node = m_lineControlPoints->GetFirst();
-  while (node)
+  for (const auto& point: m_lineControlPoints)
   {
-    wxRealPoint *point = (wxRealPoint *)node->GetData();
-
-    if (point->x < x1) x1 = point->x;
-    if (point->y < y1) y1 = point->y;
-    if (point->x > x2) x2 = point->x;
-    if (point->y > y2) y2 = point->y;
-
-    node = node->GetNext();
+    if (point.x < x1) x1 = point.x;
+    if (point.y < y1) y1 = point.y;
+    if (point.x > x2) x2 = point.x;
+    if (point.y > y2) y2 = point.y;
   }
   *w = (double)(x2 - x1);
   *h = (double)(y2 - y1);
@@ -969,17 +927,13 @@ bool wxLineShape::OnMovePre(wxDC& dc, double x, double y, double old_x, double o
   double x_offset = x - old_x;
   double y_offset = y - old_y;
 
-  if (m_lineControlPoints && !(x_offset == 0.0 && y_offset == 0.0))
+  if (!m_lineControlPoints.empty() && !(x_offset == 0.0 && y_offset == 0.0))
   {
-    auto node = m_lineControlPoints->GetFirst();
-    while (node)
+    for (auto& point: m_lineControlPoints)
     {
-      wxRealPoint *point = (wxRealPoint *)node->GetData();
-      point->x += x_offset;
-      point->y += y_offset;
-      node = node->GetNext();
+      point.x += x_offset;
+      point.y += y_offset;
     }
-
   }
 
   // Move temporary label rectangles if necessary
@@ -1009,7 +963,7 @@ bool wxLineShape::OnMovePre(wxDC& dc, double x, double y, double old_x, double o
 
 void wxLineShape::RouteLine()
 {
-    if (m_lineControlPoints->GetCount() > 2)
+    if (m_lineControlPoints.size() > 2)
       Initialise();
 
     // Do each end - nothing in the middle. User has to move other points
@@ -1040,20 +994,16 @@ void wxLineShape::OnMoveLink(wxDC& dc, bool moveControlPoints)
     double x_offset = m_xpos - oldX;
     double y_offset = m_ypos - oldY;
 
-//    if (moveControlPoints && m_lineControlPoints && !(x_offset == 0.0 && y_offset == 0.0))
     // Only move control points if it's a self link. And only works if attachment mode is ON.
-    if ((m_from == m_to) && (m_from->GetAttachmentMode() != ATTACHMENT_MODE_NONE) && moveControlPoints && m_lineControlPoints && !(x_offset == 0.0 && y_offset == 0.0))
+    if ((m_from == m_to) && (m_from->GetAttachmentMode() != ATTACHMENT_MODE_NONE) && moveControlPoints &&
+        !m_lineControlPoints.empty() && !(x_offset == 0.0 && y_offset == 0.0))
     {
-      auto node = m_lineControlPoints->GetFirst();
-      while (node)
+      // Exclude the first and last points already set above.
+      for (std::size_t i = 1; i < m_lineControlPoints.size() - 1; ++i)
       {
-        if ((node != m_lineControlPoints->GetFirst()) && (node != m_lineControlPoints->GetLast()))
-        {
-          wxRealPoint *point = (wxRealPoint *)node->GetData();
-          point->x += x_offset;
-          point->y += y_offset;
-        }
-        node = node->GetNext();
+        wxRealPoint& point = m_lineControlPoints[i];
+        point.x += x_offset;
+        point.y += y_offset;
       }
     }
 
@@ -1074,18 +1024,10 @@ void wxLineShape::FindLineEndPoints(double *fromXOut, double *fromYOut, double *
   double end_x = 0.0, end_y = 0.0;
   double other_end_x = 0.0, other_end_y = 0.0;
 
-  const auto first = m_lineControlPoints->GetFirst();
-  /* wxRealPoint *first_point = */ (wxRealPoint *)first->GetData();
-  const auto last = m_lineControlPoints->GetLast();
-  /* wxRealPoint *last_point = */ (wxRealPoint *)last->GetData();
+  const wxRealPoint& second_point = m_lineControlPoints.at(1);
+  const wxRealPoint& second_last_point = m_lineControlPoints.at(m_lineControlPoints.size() - 2);
 
-  const auto second = first->GetNext();
-  wxRealPoint *second_point = (wxRealPoint *)second->GetData();
-
-  const auto second_last = last->GetPrevious();
-  wxRealPoint *second_last_point = (wxRealPoint *)second_last->GetData();
-
-  if (m_lineControlPoints->GetCount() > 2)
+  if (m_lineControlPoints.size() > 2)
   {
     if (m_from->GetAttachmentMode() != ATTACHMENT_MODE_NONE)
     {
@@ -1095,7 +1037,7 @@ void wxLineShape::FindLineEndPoints(double *fromXOut, double *fromYOut, double *
     }
     else
       (void) m_from->GetPerimeterPoint(m_from->GetX(), m_from->GetY(),
-                                   (double)second_point->x, (double)second_point->y,
+                                   second_point.x, second_point.y,
                                     &end_x, &end_y);
 
     if (m_to->GetAttachmentMode() != ATTACHMENT_MODE_NONE)
@@ -1106,7 +1048,7 @@ void wxLineShape::FindLineEndPoints(double *fromXOut, double *fromYOut, double *
     }
     else
       (void) m_to->GetPerimeterPoint(m_to->GetX(), m_to->GetY(),
-                                (double)second_last_point->x, (double)second_last_point->y,
+                                second_last_point.x, second_last_point.y,
                                 &other_end_x, &other_end_y);
   }
   else
@@ -1152,34 +1094,31 @@ void wxLineShape::FindLineEndPoints(double *fromXOut, double *fromYOut, double *
 
 void wxLineShape::OnDraw(wxDC& dc)
 {
-  if (m_lineControlPoints)
+  if (!m_lineControlPoints.empty())
   {
     if (m_pen)
       dc.SetPen(* m_pen);
     if (m_brush)
       dc.SetBrush(* m_brush);
 
-    int n = m_lineControlPoints->GetCount();
-    wxPoint *points = new wxPoint[n];
-    int i;
-    for (i = 0; i < n; i++)
+    const auto n = m_lineControlPoints.size();
+    std::vector<wxPoint> points(n);
+    for (std::size_t i = 0; i < n; i++)
     {
-        wxRealPoint* point = (wxRealPoint*) m_lineControlPoints->Item(i)->GetData();
-        points[i].x = WXROUND(point->x);
-        points[i].y = WXROUND(point->y);
+        const wxRealPoint& point = m_lineControlPoints[i];
+        points[i].x = WXROUND(point.x);
+        points[i].y = WXROUND(point.y);
     }
 
     if (m_isSpline)
-      dc.DrawSpline(n, points);
+      dc.DrawSpline(n, points.data());
     else
-      dc.DrawLines(n, points);
+      dc.DrawLines(n, points.data());
 
 #ifdef __WXMSW__
     // For some reason, last point isn't drawn under Windows.
     dc.DrawPoint(points[n-1]);
 #endif
-
-    delete[] points;
 
 
     // Problem with pen - if not a solid pen, does strange things
@@ -1295,62 +1234,41 @@ void wxLineShape::SetFrom(wxShape *object)
 
 void wxLineShape::MakeControlPoints()
 {
-  if (m_canvas && m_lineControlPoints)
+  if (m_canvas && !m_lineControlPoints.empty())
   {
-    const auto first = m_lineControlPoints->GetFirst();
-    const auto last = m_lineControlPoints->GetLast();
-    wxRealPoint *first_point = (wxRealPoint *)first->GetData();
-    wxRealPoint *last_point = (wxRealPoint *)last->GetData();
-
-    wxLineControlPoint *control = new wxLineControlPoint(m_canvas, this, CONTROL_POINT_SIZE,
-                                               first_point->x, first_point->y,
-                                               CONTROL_POINT_ENDPOINT_FROM);
-    control->m_point = first_point;
-    m_canvas->AddShape(control);
-    m_controlPoints.Append(control);
-
-
-    auto node = first->GetNext();
-    while (node != last)
+    for (std::size_t n = 0; n < m_lineControlPoints.size(); ++n)
     {
-      wxRealPoint *point = (wxRealPoint *)node->GetData();
+      const wxRealPoint& point = m_lineControlPoints[n];
 
-      control = new wxLineControlPoint(m_canvas, this, CONTROL_POINT_SIZE,
-                                               point->x, point->y,
-                                               CONTROL_POINT_LINE);
-      control->m_point = point;
-
+      const auto control = new wxLineControlPoint
+                               (
+                                m_canvas, this, CONTROL_POINT_SIZE,
+                                point.x, point.y,
+                                n == 0
+                                  ? CONTROL_POINT_ENDPOINT_FROM
+                                  : n == m_lineControlPoints.size() - 1
+                                    ? CONTROL_POINT_ENDPOINT_TO
+                                    : CONTROL_POINT_LINE
+                               );
       m_canvas->AddShape(control);
       m_controlPoints.Append(control);
-
-      node = node->GetNext();
     }
-    control = new wxLineControlPoint(m_canvas, this, CONTROL_POINT_SIZE,
-                                               last_point->x, last_point->y,
-                                               CONTROL_POINT_ENDPOINT_TO);
-    control->m_point = last_point;
-    m_canvas->AddShape(control);
-    m_controlPoints.Append(control);
-
   }
 
 }
 
 void wxLineShape::ResetControlPoints()
 {
-  if (m_canvas && m_lineControlPoints && m_controlPoints.GetCount() > 0)
+  if (m_canvas && !m_controlPoints.empty())
   {
     auto node = m_controlPoints.GetFirst();
-    auto control_node = m_lineControlPoints->GetFirst();
-    while (node && control_node)
+    for (const auto& point: m_lineControlPoints)
     {
-      wxRealPoint *point = (wxRealPoint *)control_node->GetData();
       wxLineControlPoint *control = (wxLineControlPoint *)node->GetData();
-      control->SetX(point->x);
-      control->SetY(point->y);
+      control->SetX(point.x);
+      control->SetY(point.y);
 
       node = node->GetNext();
-      control_node = control_node->GetNext();
     }
   }
 }
@@ -1380,22 +1298,7 @@ void wxLineShape::Copy(wxShape& copy)
     node = node->GetNext();
   }
 
-  if (lineCopy.m_lineControlPoints)
-  {
-    ClearPointList(*lineCopy.m_lineControlPoints);
-    delete lineCopy.m_lineControlPoints;
-  }
-
-  lineCopy.m_lineControlPoints = new wxList;
-
-  node = m_lineControlPoints->GetFirst();
-  while (node)
-  {
-    wxRealPoint *point = (wxRealPoint *)node->GetData();
-    wxRealPoint *new_point = new wxRealPoint(point->x, point->y);
-    lineCopy.m_lineControlPoints->Append((wxObject*) new_point);
-    node = node->GetNext();
-  }
+  lineCopy.m_lineControlPoints = m_lineControlPoints;
 
   // Copy arrows
   lineCopy.ClearArrowsAtPosition(-1);
@@ -1471,7 +1374,7 @@ wxLineControlPoint::wxLineControlPoint(wxShapeCanvas *theCanvas, wxShape *object
   m_xpos = x;
   m_ypos = y;
   m_type = the_type;
-  m_point = nullptr;
+  m_point = wxRealPoint(x, y);
 }
 
 wxLineControlPoint::~wxLineControlPoint()
@@ -1523,7 +1426,7 @@ void wxLineShape::OnSizingDragLeft(wxControlPoint* pt, bool draw, double x, doub
     m_canvas->Snap(&x, &y);
 
     lpt->SetX(x); lpt->SetY(y);
-    lpt->m_point->x = x; lpt->m_point->y = y;
+    lpt->m_point.x = x; lpt->m_point.y = y;
 
     wxLineShape *lineShape = (wxLineShape *)this;
 
@@ -1557,7 +1460,7 @@ void wxLineShape::OnSizingBeginDragLeft(wxControlPoint* pt, double x, double y, 
   wxLineShape *lineShape = (wxLineShape *)this;
   if (lpt->m_type == CONTROL_POINT_LINE)
   {
-    lpt->m_originalPos = * (lpt->m_point);
+    lpt->m_originalPos = lpt->m_point;
     m_canvas->Snap(&x, &y);
 
     this->Erase(dc);
@@ -1572,7 +1475,7 @@ void wxLineShape::OnSizingBeginDragLeft(wxControlPoint* pt, double x, double y, 
     this->SetDisableLabel(true);
 
     lpt->m_xpos = x; lpt->m_ypos = y;
-    lpt->m_point->x = x; lpt->m_point->y = y;
+    lpt->m_point.x = x; lpt->m_point.y = y;
 
     const wxPen *old_pen = lineShape->GetPen();
     const wxBrush *old_brush = lineShape->GetBrush();
@@ -1616,7 +1519,7 @@ void wxLineShape::OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, in
     // during user feedback so we could redraw the line
     // as it changed shape.
     lpt->m_xpos = lpt->m_originalPos.x; lpt->m_ypos = lpt->m_originalPos.y;
-    lpt->m_point->x = lpt->m_originalPos.x; lpt->m_point->y = lpt->m_originalPos.y;
+    lpt->m_point.x = lpt->m_originalPos.x; lpt->m_point.y = lpt->m_originalPos.y;
 
     OnMoveMiddleControlPoint(dc, lpt, ptMid);
   }
@@ -1666,7 +1569,7 @@ void wxLineShape::OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, in
 bool wxLineShape::OnMoveMiddleControlPoint(wxDC& dc, wxLineControlPoint* lpt, const wxRealPoint& pt)
 {
     lpt->m_xpos = pt.x; lpt->m_ypos = pt.y;
-    lpt->m_point->x = pt.x; lpt->m_point->y = pt.y;
+    lpt->m_point.x = pt.x; lpt->m_point.y = pt.y;
 
     GetEventHandler()->OnMoveLink(dc);
 
@@ -2094,8 +1997,8 @@ int wxLineShape::GetAlignmentType(bool isEnd)
 
 wxRealPoint *wxLineShape::GetNextControlPoint(wxShape *nodeObject)
 {
-  int n = m_lineControlPoints->GetCount();
-  int nn;
+  const auto n = m_lineControlPoints.size();
+  std::size_t nn;
   if (m_to == nodeObject)
   {
     // Must be END of line, so we want (n - 1)th control point.
@@ -2103,13 +2006,7 @@ wxRealPoint *wxLineShape::GetNextControlPoint(wxShape *nodeObject)
     nn = n - 2;
   }
   else nn = 1;
-  const auto node = m_lineControlPoints->Item(nn);
-  if (node)
-  {
-    return (wxRealPoint *)node->GetData();
-  }
-  else
-    return nullptr;
+  return &m_lineControlPoints.at(nn);
 }
 
 /*

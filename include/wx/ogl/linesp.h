@@ -40,7 +40,7 @@ class WXDLLIMPEXP_OGL wxLineControlPoint: public wxControlPoint
 public:
 
   int           m_type;
-  wxRealPoint*  m_point;  // Line point
+  wxRealPoint   m_point;  // Line point
   wxRealPoint   m_originalPos;
 
 };

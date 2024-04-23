@@ -750,7 +750,7 @@ void csDiagramView::OnNewLinePoint(wxCommandEvent& WXUNUSED(event))
         if (shape->IsKindOf(CLASSINFO(wxLineShape)))
         {
             wxShape* newShape = shape->CreateNewCopy();
-            ((wxLineShape*)newShape)->InsertLineControlPoint(NULL);
+            ((wxLineShape*)newShape)->InsertLineControlPoint();
             csCommandState* state = new csCommandState(ID_CS_NEW_POINT, newShape, shape);
             cmd->AddState(state);
         }

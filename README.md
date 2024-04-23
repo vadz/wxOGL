@@ -5,6 +5,9 @@ This is a slightly modernized version of the original wxOGL library written by
 Julian Smart in the last millennium, i.e. a version which can be compiled with
 a modern C++ compiler and use wxWidgets 3.x or later.
 
+Some _incompatible_ changes have been made to the original library, see the
+corresponding section below for more details.
+
 
 Building
 --------
@@ -19,3 +22,9 @@ Using
 -----
 
 See ogledit sample. Some documentation is available in LaTeX format.
+
+If you have existing code using wxOGL, please note that this version is not
+100% compatible with the original. Notably:
+
+- `wxLineShape::GetLineControlPoints()` returns `std::vector<wxRealPoint>`
+  instead of legacy `wxList` container.

@@ -18,4 +18,10 @@
     #define WXDLLIMPEXP_OGL
 #endif
 
+#include <wx/gdicmn.h>
+
+#include <vector>
+
+using wxOGLPoints = std::vector<wxRealPoint>;
+
 #endif // _WX_OGL_DEFS_H_

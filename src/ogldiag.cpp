@@ -248,12 +248,12 @@ void wxLineCrossings::FindCrossings(wxDiagram& diagram)
         {
             wxLineShape* lineShape1 = (wxLineShape*) shape1;
             // Iterate through the segments
-            wxList* pts1 = lineShape1->GetLineControlPoints();
+            const auto& pts1 = lineShape1->GetLineControlPoints();
             size_t i;
-            for (i = 0; i < (pts1->GetCount() - 1); i++)
+            for (i = 0; i < (pts1.size() - 1); i++)
             {
-                wxRealPoint* pt1_a = (wxRealPoint*) (pts1->Item(i)->GetData());
-                wxRealPoint* pt1_b = (wxRealPoint*) (pts1->Item(i+1)->GetData());
+                const wxRealPoint& pt1_a = pts1[i];
+                const wxRealPoint& pt1_b = pts1[i+1];
 
                 // Now we iterate through the segments again
 
@@ -267,30 +267,30 @@ void wxLineCrossings::FindCrossings(wxDiagram& diagram)
                     {
                         wxLineShape* lineShape2 = (wxLineShape*) shape2;
                         // Iterate through the segments
-                        wxList* pts2 = lineShape2->GetLineControlPoints();
+                        const auto& pts2 = lineShape2->GetLineControlPoints();
                         int j;
-                        for (j = 0; j < (int) (pts2->GetCount() - 1); j++)
+                        for (j = 0; j < (int) (pts2.size() - 1); j++)
                         {
-                            wxRealPoint* pt2_a = (wxRealPoint*) (pts2->Item(j)->GetData());
-                            wxRealPoint* pt2_b = (wxRealPoint*) (pts2->Item(j+1)->GetData());
+                            const wxRealPoint& pt2_a = pts2[j];
+                            const wxRealPoint& pt2_b = pts2[j+1];
 
                             // Now let's see if these two segments cross.
                             double ratio1, ratio2;
-                            oglCheckLineIntersection(pt1_a->x, pt1_a->y, pt1_b->x, pt1_b->y,
-                               pt2_a->x, pt2_a->y, pt2_b->x, pt2_b->y,
+                            oglCheckLineIntersection(pt1_a.x, pt1_a.y, pt1_b.x, pt1_b.y,
+                               pt2_a.x, pt2_a.y, pt2_b.x, pt2_b.y,
                              & ratio1, & ratio2);
 
                             if ((ratio1 < 1.0) && (ratio1 > -1.0))
                             {
                                 // Intersection!
                                 wxLineCrossing* crossing = new wxLineCrossing;
-                                crossing->m_intersect.x = (pt1_a->x + (pt1_b->x - pt1_a->x)*ratio1);
-                                crossing->m_intersect.y = (pt1_a->y + (pt1_b->y - pt1_a->y)*ratio1);
+                                crossing->m_intersect.x = (pt1_a.x + (pt1_b.x - pt1_a.x)*ratio1);
+                                crossing->m_intersect.y = (pt1_a.y + (pt1_b.y - pt1_a.y)*ratio1);
 
-                                crossing->m_pt1 = * pt1_a;
-                                crossing->m_pt2 = * pt1_b;
-                                crossing->m_pt3 = * pt2_a;
-                                crossing->m_pt4 = * pt2_b;
+                                crossing->m_pt1 = pt1_a;
+                                crossing->m_pt2 = pt1_b;
+                                crossing->m_pt3 = pt2_a;
+                                crossing->m_pt4 = pt2_b;
 
                                 crossing->m_lineShape1 = lineShape1;
                                 crossing->m_lineShape2 = lineShape2;

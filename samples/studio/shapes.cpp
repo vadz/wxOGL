@@ -418,17 +418,14 @@ void csEvtHandler::OnEndDragLeft(double x, double y, int keys, int attachment)
      {
         wxLineShape* lineShape = (wxLineShape*) shape;
 
-        if (lineShape->GetLineControlPoints()->GetCount() > 2)
+        if (lineShape->GetLineControlPoints().size() > 2)
         {
             wxLineShape* newLineShape = (wxLineShape*) lineShape->CreateNewCopy();
 
-            wxObjectList::compatibility_iterator node1 = newLineShape->GetLineControlPoints()->GetFirst();
-            while (node1)
+            for (auto& point : newLineShape->GetLineControlPoints())
             {
-                wxRealPoint *point = (wxRealPoint *)node1->GetData();
-                point->x += offsetX;
-                point->y += offsetY;
-                node1 = node1->GetNext();
+                point.x += offsetX;
+                point.y += offsetY;
             }
             cmd->AddState(new csCommandState(ID_CS_MOVE_LINE_POINT, newLineShape, lineShape));
             lineShape->Erase(dc);
@@ -1058,13 +1055,13 @@ bool csLineShape::OnMoveMiddleControlPoint(wxDC& WXUNUSED(dc), wxLineControlPoin
 
     // Temporarily set the new shape properties so we can copy it
     lpt->SetX(pt.x); lpt->SetY(pt.y);
-    lpt->m_point->x = pt.x; lpt->m_point->y = pt.y;
+    lpt->m_point.x = pt.x; lpt->m_point.y = pt.y;
 
     wxLineShape* newShape = (wxLineShape*) this->CreateNewCopy();
 
     // Now set them back again
     lpt->SetX(lpt->m_originalPos.x); lpt->SetY(lpt->m_originalPos.y);
-    lpt->m_point->x = lpt->m_originalPos.x; lpt->m_point->y = lpt->m_originalPos.y;
+    lpt->m_point.x = lpt->m_originalPos.x; lpt->m_point.y = lpt->m_originalPos.y;
 
     view->GetDocument()->GetCommandProcessor()->Submit(new csDiagramCommand(_T("Move line point"), (csDiagramDocument*) view->GetDocument(),
                 new csCommandState(ID_CS_MOVE_LINE_POINT, newShape, this)));

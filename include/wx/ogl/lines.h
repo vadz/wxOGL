@@ -158,7 +158,9 @@ class WXDLLIMPEXP_OGL wxLineShape: public wxShape
   virtual void InsertLineControlPoint();
   virtual bool DeleteLineControlPoint();
   virtual void Initialise();
-  inline wxList *GetLineControlPoints() { return m_lineControlPoints; }
+
+  wxOGLPoints& GetLineControlPoints() { return m_lineControlPoints; }
+  const wxOGLPoints& GetLineControlPoints() const { return m_lineControlPoints; }
 
   // Override dragging behaviour - don't want to be able to drag lines!
   void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0);
@@ -277,7 +279,7 @@ protected:
   // These define the segmented line - not to be confused with temporary control
   // points which appear when object is selected (although in this case they'll
   // probably be the same)
-  wxList*           m_lineControlPoints;
+  wxOGLPoints       m_lineControlPoints;
 
   double            m_arrowSpacing; // Separation between adjacent arrows
 
