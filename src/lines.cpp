@@ -112,7 +112,7 @@ void wxLineShape::MakeLineControlPoints(int n)
   }
 }
 
-wxList::compatibility_iterator wxLineShape::InsertLineControlPoint(wxDC* dc)
+void wxLineShape::InsertLineControlPoint(wxDC* dc)
 {
     if (dc)
         Erase(*dc);
@@ -127,7 +127,7 @@ wxList::compatibility_iterator wxLineShape::InsertLineControlPoint(wxDC* dc)
   double line_y = ((last_point->y + second_last_point->y)/2);
 
   wxRealPoint *point = new wxRealPoint(line_x, line_y);
-  return m_lineControlPoints->Insert(last, (wxObject*) point);
+  m_lineControlPoints->Insert(last, (wxObject*) point);
 }
 
 bool wxLineShape::DeleteLineControlPoint()
