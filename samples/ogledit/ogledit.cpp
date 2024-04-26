@@ -61,7 +61,8 @@ bool MyApp::OnInit(void)
   myDocManager->SetMaxDocsOpen(1);
 
   //// Create the main frame window
-  frame = new MyFrame(myDocManager, NULL, _T("OGLEdit Demo"), wxPoint(0, 0), wxSize(500, 400), wxDEFAULT_FRAME_STYLE);
+  frame = new MyFrame(myDocManager, NULL, _T("OGLEdit Demo"));
+  frame->SetSize(frame->FromDIP(wxSize(500, 400)));
 
   //// Give it an icon
   frame->SetIcon(wxICON(ogl));
@@ -159,7 +160,7 @@ void MyFrame::OnSize(wxSizeEvent& event)
     GetClientSize(&cw, &ch);
     int paletteX = 0;
     int paletteY = 0;
-    int paletteW = 30;
+    int paletteW = FromDIP(30);
     int paletteH = ch;
     int canvasX = paletteX + paletteW;
     int canvasY = 0;
@@ -194,7 +195,7 @@ MyCanvas *MyFrame::CreateCanvas(wxView *view, wxFrame *parent)
   canvas->SetCursor(wxCursor(wxCURSOR_HAND));
 
   // Give it scrollbars
-  canvas->SetScrollbars(20, 20, 50, 50);
+  canvas->SetScrollbars(FromDIP(20), FromDIP(20), 50, 50);
 
   return canvas;
 }

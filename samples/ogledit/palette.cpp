@@ -86,9 +86,6 @@ EditorToolPalette *MyApp::CreatePalette(wxFrame *parent)
   EditorToolPalette *palette = new EditorToolPalette(parent, wxPoint(0, 0), wxDefaultSize,
       wxTB_VERTICAL);
 
-  palette->SetMargins(2, 2);
-  palette->SetToolBitmapSize(wxSize(22, 22));
-
   palette->AddCheckTool(PALETTE_ARROW, "", PaletteArrow, wxNullBitmap, _T("Pointer"));
   palette->AddCheckTool(PALETTE_TOOL1, "", PaletteTool1, wxNullBitmap, _T("Tool 1"));
   palette->AddCheckTool(PALETTE_TOOL2, "", PaletteTool2, wxNullBitmap, _T("Tool 2"));
