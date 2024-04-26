@@ -108,7 +108,6 @@ bool MyApp::OnInit(void)
     menu_bar->Append(edit_menu, _T("&Edit"));
   menu_bar->Append(help_menu, _T("&Help"));
 
-  frame->canvas = frame->CreateCanvas(NULL, frame);
   frame->palette = wxGetApp().CreatePalette(frame);
   myDocManager->CreateDocument(wxEmptyString, wxDOC_NEW);
 
@@ -147,9 +146,15 @@ MyFrame::MyFrame(wxDocManager *manager, wxFrame *frame, const wxString& title,
     const wxPoint& pos, const wxSize& size, long type):
   wxDocParentFrame(manager, frame, wxID_ANY, title, pos, size, type)
 {
-  canvas = NULL;
   palette = NULL;
   editMenu = NULL;
+
+  // Non-retained canvas
+  canvas = new MyCanvas(NULL, this, wxID_ANY);
+  canvas->SetCursor(wxCursor(wxCURSOR_HAND));
+
+  // Give it scrollbars
+  canvas->SetScrollbars(FromDIP(20), FromDIP(20), 50, 50);
 }
 
 void MyFrame::OnSize(wxSizeEvent& event)
@@ -182,22 +187,6 @@ MyFrame::~MyFrame()
 void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
       (void)wxMessageBox(_T("OGLEdit Demo\nTo draw a shape, select a shape on the toolbar and left-click on the canvas.\nTo draw a line, right-drag between shapes.\nFor further details, see the OGL manual.\n (c) Julian Smart 1996"), _T("About OGLEdit"));
-}
-
-// Creates a canvas. Called by OnInit as a child of the main window
-MyCanvas *MyFrame::CreateCanvas(wxView *view, wxFrame *parent)
-{
-  int width, height;
-  parent->GetClientSize(&width, &height);
-
-  // Non-retained canvas
-  MyCanvas *canvas = new MyCanvas(view, parent, wxID_ANY, wxPoint(0, 0), wxSize(width, height), 0);
-  canvas->SetCursor(wxCursor(wxCURSOR_HAND));
-
-  // Give it scrollbars
-  canvas->SetScrollbars(FromDIP(20), FromDIP(20), 50, 50);
-
-  return canvas;
 }
 
 MyFrame *GetMainFrame(void)

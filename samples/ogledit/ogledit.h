@@ -51,7 +51,6 @@ public:
             long style = wxDEFAULT_FRAME_STYLE);
     virtual ~MyFrame();
 
-    MyCanvas *CreateCanvas(wxView *view, wxFrame *parent);
     void OnSize(wxSizeEvent& event);
     void OnAbout(wxCommandEvent& event);
 
