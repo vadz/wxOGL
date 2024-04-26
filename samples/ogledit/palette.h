@@ -12,37 +12,19 @@
 #ifndef _OGLSAMPLE_PALETTE_H_
 #define _OGLSAMPLE_PALETTE_H_
 
-#include "wx/wx.h"
-#include "wx/string.h"
+#include "wx/toolbar.h"
 
 /*
  * Object editor tool palette
  *
  */
 
-// TODO for wxWin: wxToolBar95 cannot be moved to a non-0,0 position!
-// Needs to have a parent window...
-// So use a simple toolbar at present.
-// ABX: Simple toolbar is not available in default compilation
-//      so I use wxToolBar anyway
-// #if 0 // def __WXGTK__
-// #define TOOLPALETTECLASS    wxToolBar
-// #else
-// #define TOOLPALETTECLASS    wxToolBarSimple
-// #endif
-#define TOOLPALETTECLASS    wxToolBar
-
-class EditorToolPalette: public TOOLPALETTECLASS
+class EditorToolPalette: public wxToolBar
 {
  public:
-  int currentlySelected;
-
   EditorToolPalette(wxWindow *parent, const wxPoint& pos = wxDefaultPosition,
     const wxSize& size = wxDefaultSize,
     long style = wxTB_VERTICAL);
-  bool OnLeftClick(int toolIndex, bool toggled);
-  void OnMouseEnter(int toolIndex);
-  void SetSize(int x, int y, int width, int height, int sizeFlags = wxSIZE_AUTO);
 };
 
 #define PALETTE_TOOL1           1

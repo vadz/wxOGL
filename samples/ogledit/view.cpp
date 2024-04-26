@@ -256,31 +256,23 @@ void MyCanvas::OnLeftClick(double x, double y, int WXUNUSED(keys))
 {
   EditorToolPalette *palette = wxGetApp().frame->palette;
   wxClassInfo *info = NULL;
-  switch (palette->currentlySelected)
+  if (palette->GetToolState(PALETTE_TOOL1))
   {
-    case PALETTE_TOOL1:
-    {
-      info = CLASSINFO(wxRectangleShape);
-      break;
-    }
-    case PALETTE_TOOL2:
-    {
-      info = CLASSINFO(wxRoundedRectangleShape);
-      break;
-    }
-    case PALETTE_TOOL3:
-    {
-      info = CLASSINFO(wxEllipseShape);
-      break;
-    }
-    case PALETTE_TOOL4:
-    {
-      info = CLASSINFO(wxDiamondShape);
-      break;
-    }
-    default:
-      break;
+    info = CLASSINFO(wxRectangleShape);
   }
+  else if (palette->GetToolState(PALETTE_TOOL2))
+  {
+    info = CLASSINFO(wxRoundedRectangleShape);
+  }
+  else if (palette->GetToolState(PALETTE_TOOL3))
+  {
+    info = CLASSINFO(wxEllipseShape);
+  }
+  else if (palette->GetToolState(PALETTE_TOOL4))
+  {
+    info = CLASSINFO(wxDiamondShape);
+  }
+
   if (info)
   {
     view->GetDocument()->GetCommandProcessor()->Submit(

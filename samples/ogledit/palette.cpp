@@ -22,14 +22,8 @@
 
 #include "wx/toolbar.h"
 
-#include <ctype.h>
-#include <stdlib.h>
-#include <math.h>
-
-#include "doc.h"
-#include "view.h"
-#include "ogledit.h"
 #include "palette.h"
+#include "ogledit.h"
 
 // Include pixmaps
 #include "bitmaps/arrow.xpm"
@@ -45,33 +39,8 @@
 
 EditorToolPalette::EditorToolPalette(wxWindow* parent, const wxPoint& pos, const wxSize& size,
             long style):
-  TOOLPALETTECLASS(parent, wxID_ANY, pos, size, style)
+  wxToolBar(parent, wxID_ANY, pos, size, style)
 {
-    currentlySelected = -1;
-}
-
-bool EditorToolPalette::OnLeftClick(int toolIndex, bool toggled)
-{
-  // BEGIN mutual exclusivity code
-  if (toggled && (currentlySelected != -1) && (toolIndex != currentlySelected))
-    ToggleTool(currentlySelected, false);
-
-  if (toggled)
-    currentlySelected = toolIndex;
-  else if (currentlySelected == toolIndex)
-    currentlySelected = -1;
-  //  END mutual exclusivity code
-
-  return true;
-}
-
-void EditorToolPalette::OnMouseEnter(int WXUNUSED(toolIndex))
-{
-}
-
-void EditorToolPalette::SetSize(int x, int y, int width, int height, int sizeFlags)
-{
-  TOOLPALETTECLASS::SetSize(x, y, width, height, sizeFlags);
 }
 
 EditorToolPalette *MyApp::CreatePalette(wxFrame *parent)
@@ -86,15 +55,14 @@ EditorToolPalette *MyApp::CreatePalette(wxFrame *parent)
   EditorToolPalette *palette = new EditorToolPalette(parent, wxPoint(0, 0), wxDefaultSize,
       wxTB_VERTICAL);
 
-  palette->AddCheckTool(PALETTE_ARROW, "", PaletteArrow, wxNullBitmap, _T("Pointer"));
-  palette->AddCheckTool(PALETTE_TOOL1, "", PaletteTool1, wxNullBitmap, _T("Tool 1"));
-  palette->AddCheckTool(PALETTE_TOOL2, "", PaletteTool2, wxNullBitmap, _T("Tool 2"));
-  palette->AddCheckTool(PALETTE_TOOL3, "", PaletteTool3, wxNullBitmap, _T("Tool 3"));
-  palette->AddCheckTool(PALETTE_TOOL4, "", PaletteTool4, wxNullBitmap, _T("Tool 4"));
+  palette->AddRadioTool(PALETTE_ARROW, "", PaletteArrow, wxNullBitmap, _T("Pointer"));
+  palette->AddRadioTool(PALETTE_TOOL1, "", PaletteTool1, wxNullBitmap, _T("Tool 1"));
+  palette->AddRadioTool(PALETTE_TOOL2, "", PaletteTool2, wxNullBitmap, _T("Tool 2"));
+  palette->AddRadioTool(PALETTE_TOOL3, "", PaletteTool3, wxNullBitmap, _T("Tool 3"));
+  palette->AddRadioTool(PALETTE_TOOL4, "", PaletteTool4, wxNullBitmap, _T("Tool 4"));
 
   palette->Realize();
 
   palette->ToggleTool(PALETTE_ARROW, true);
-  palette->currentlySelected = PALETTE_ARROW;
   return palette;
 }
