@@ -419,15 +419,15 @@ bool DiagramCommand::Undo(void)
 }
 
 // Remove each individual line connected to a shape by sending a command.
-void DiagramCommand::RemoveLines(wxShape *shape)
+void DiagramCommand::RemoveLines(wxShape *shapeFrom)
 {
-  wxObjectList::compatibility_iterator node = shape->GetLines().GetFirst();
+  wxObjectList::compatibility_iterator node = shapeFrom->GetLines().GetFirst();
   while (node)
   {
     wxLineShape *line = (wxLineShape *)node->GetData();
     doc->GetCommandProcessor()->Submit(new DiagramCommand(_T("Cut"), wxID_CUT, doc, NULL, 0.0, 0.0, line->Selected(), line));
 
-    node = shape->GetLines().GetFirst();
+    node = shapeFrom->GetLines().GetFirst();
   }
 }
 
