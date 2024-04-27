@@ -26,6 +26,8 @@
 
 #include <ctype.h>
 
+#include <cmath>
+
 #include "wx/ogl/ogl.h"
 
 
@@ -979,12 +981,22 @@ void wxLineShape::RouteLine()
         const wxRealPoint last = m_lineControlPoints.back();
         wxRealPoint& middle = m_lineControlPoints.at(1);
 
-        // For now always create a line starting with a horizontal segment.
-        // We need to improve this to take the current middle point position
-        // into account and start with a vertical segment if it's closer to the
-        // existing shape.
-        middle.x = last.x;
-        middle.y = first.y;
+        // Determine whether the current position of the middle point is above
+        // or below the line connecting the first and last points and put it in
+        // either the upper or bottom corner of the rectangle defined by these
+        // points depending on it.
+
+        if (std::atan2(std::abs(middle.y - first.y), std::abs(middle.x - first.x)) >
+            std::atan2(std::abs(last.y - first.y), std::abs(last.x - first.x)))
+        {
+            middle.x = first.x;
+            middle.y = last.y;
+        }
+        else
+        {
+            middle.x = last.x;
+            middle.y = first.y;
+        }
     }
     else
     {
