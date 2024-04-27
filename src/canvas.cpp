@@ -48,6 +48,7 @@ IMPLEMENT_DYNAMIC_CLASS(wxShapeCanvas, wxScrolledWindow)
 BEGIN_EVENT_TABLE(wxShapeCanvas, wxScrolledWindow)
     EVT_PAINT(wxShapeCanvas::OnPaint)
     EVT_MOUSE_EVENTS(wxShapeCanvas::OnMouseEvent)
+    EVT_MOUSE_CAPTURE_LOST(wxShapeCanvas::OnCaptureLost)
 END_EVENT_TABLE()
 
 const wxChar* wxShapeCanvasNameStr = wxT("shapeCanvas");
@@ -319,6 +320,16 @@ void wxShapeCanvas::OnMouseEvent(wxMouseEvent& event)
       }
     }
   }
+}
+
+void wxShapeCanvas::OnCaptureLost(wxMouseCaptureLostEvent& WXUNUSED(event))
+{
+    // Make sure we relinquish the mouse capture if we have it.
+    if ( HasCapture() )
+        ReleaseMouse();
+
+    // And erase everything we could have drawn while dragging.
+    ClearHints();
 }
 
 /*

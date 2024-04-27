@@ -76,6 +76,7 @@ class WXDLLIMPEXP_OGL wxShapeCanvas: public wxScrolledWindow
   // Events
   void OnPaint(wxPaintEvent& event);
   void OnMouseEvent(wxMouseEvent& event);
+  void OnCaptureLost(wxMouseCaptureLostEvent& event);
 
  protected:
   wxDiagram*        m_shapeDiagram;
