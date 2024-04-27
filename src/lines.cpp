@@ -1439,8 +1439,7 @@ void wxLineShape::OnSizingDragLeft(wxControlPoint* pt, bool draw, double x, doub
   {
     m_canvas->Snap(&x, &y);
 
-    lpt->SetX(x); lpt->SetY(y);
-    lpt->m_point.x = x; lpt->m_point.y = y;
+    UpdateMiddleControlPoint(lpt, wxRealPoint(x, y));
 
     wxLineShape *lineShape = (wxLineShape *)this;
 
@@ -1504,8 +1503,7 @@ void wxLineShape::OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, in
     // if it decides it wants. We only moved the position
     // during user feedback so we could redraw the line
     // as it changed shape.
-    lpt->m_xpos = lpt->m_originalPos.x; lpt->m_ypos = lpt->m_originalPos.y;
-    lpt->m_point.x = lpt->m_originalPos.x; lpt->m_point.y = lpt->m_originalPos.y;
+    UpdateMiddleControlPoint(lpt, lpt->m_originalPos);
 
     OnMoveMiddleControlPoint(dc, lpt, ptMid);
   }
@@ -1551,11 +1549,30 @@ void wxLineShape::OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, in
 #endif
 }
 
+void wxLineShape::UpdateMiddleControlPoint(wxLineControlPoint* lpt, const wxRealPoint& pt)
+{
+  lpt->SetX(pt.x);
+  lpt->SetY(pt.y);
+  lpt->m_point = pt;
+
+  // Also update the corresponding line control point.
+  size_t n = 0;
+  for (auto node = m_controlPoints.GetFirst(); node; node = node->GetNext(), ++n)
+  {
+    if (node->GetData() == lpt)
+    {
+      m_lineControlPoints.at(n) = pt;
+      return;
+    }
+  }
+
+  wxFAIL_MSG("Unknown line control point?");
+}
+
 // This is called only when a non-end control point is moved.
 bool wxLineShape::OnMoveMiddleControlPoint(wxDC& dc, wxLineControlPoint* lpt, const wxRealPoint& pt)
 {
-    lpt->m_xpos = pt.x; lpt->m_ypos = pt.y;
-    lpt->m_point.x = pt.x; lpt->m_point.y = pt.y;
+    UpdateMiddleControlPoint(lpt, pt);
 
     GetEventHandler()->OnMoveLink(dc);
 

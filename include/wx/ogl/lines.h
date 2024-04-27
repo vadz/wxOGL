@@ -258,6 +258,11 @@ private:
   // both be valid if this function is called.
   void RouteLine();
 
+  // Update the position of the given middle (i.e. not start or end) control
+  // point.
+  void UpdateMiddleControlPoint(wxLineControlPoint* lpt, const wxRealPoint& pt);
+
+
   bool              m_erasing;              // flag to say whether we're erasing or drawing
                                             // this line (really so metafiles can draw a
                                             // blank rectangle)
