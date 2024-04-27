@@ -434,11 +434,14 @@ void MyEvtHandler::OnBeginDragRight(double x, double y, int keys, int attachment
 
   wxLogStatus("Create new connection by dragging from this shape to another");
 
-  OnDragRight(false, x, y, keys, attachment);
+  OnDragRight(true, x, y, keys, attachment);
 }
 
-void MyEvtHandler::OnDragRight(bool WXUNUSED(draw), double x, double y, int WXUNUSED(keys), int attachment)
+void MyEvtHandler::OnDragRight(bool draw, double x, double y, int WXUNUSED(keys), int attachment)
 {
+  if (!draw)
+      return;
+
   wxShapeCanvasOverlay overlay(GetShape()->GetCanvas());
   wxDC& dc = overlay.GetDC();
 
