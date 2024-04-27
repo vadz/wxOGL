@@ -124,7 +124,7 @@ bool wxLineShape::DeleteLineControlPoint()
 
 void wxLineShape::Initialise()
 {
-  if (!m_lineControlPoints.empty())
+  if (m_lineControlPoints.size() > 2)
   {
     // Just move the first and last control points
     const auto first = m_lineControlPoints.begin();
@@ -963,9 +963,6 @@ bool wxLineShape::OnMovePre(wxDC& dc, double x, double y, double old_x, double o
 
 void wxLineShape::RouteLine()
 {
-    if (m_lineControlPoints.size() > 2)
-      Initialise();
-
     // Do each end - nothing in the middle. User has to move other points
     // manually if necessary.
     double end_x, end_y;
@@ -978,6 +975,9 @@ void wxLineShape::RouteLine()
     // Do a second time, because one may depend on the other.
     FindLineEndPoints(&end_x, &end_y, &other_end_x, &other_end_y);
     SetEnds(end_x, end_y, other_end_x, other_end_y);
+
+    // Update intermediate points, if any.
+    Initialise();
 }
 
 void wxLineShape::OnMoveLink(wxDC& dc, bool moveControlPoints)
