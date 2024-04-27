@@ -437,21 +437,17 @@ void DiagramCommand::RemoveLines(wxShape *shapeFrom)
 
 void MyEvtHandler::OnLeftClick(double WXUNUSED(x), double WXUNUSED(y), int keys, int WXUNUSED(attachment))
 {
-  wxClientDC dc(GetShape()->GetCanvas());
-  GetShape()->GetCanvas()->PrepareDC(dc);
-
   if (keys == 0)
   {
     // Selection is a concept the library knows about
     if (GetShape()->Selected())
     {
-      GetShape()->Select(false, &dc);
-      GetShape()->GetCanvas()->Redraw(dc); // Redraw because bits of objects will be are missing
+      GetShape()->Select(false);
+      GetShape()->GetCanvas()->Refresh(); // Redraw because bits of objects will be are missing
     }
     else
     {
       // Ensure no other shape is selected, to simplify Undo/Redo code
-      bool redraw = false;
       wxObjectList::compatibility_iterator node = GetShape()->GetCanvas()->GetDiagram()->GetShapeList()->GetFirst();
       while (node)
       {
@@ -460,15 +456,13 @@ void MyEvtHandler::OnLeftClick(double WXUNUSED(x), double WXUNUSED(y), int keys,
         {
           if (eachShape->Selected())
           {
-            eachShape->Select(false, &dc);
-            redraw = true;
+            eachShape->Select(false);
           }
         }
         node = node->GetNext();
       }
-      GetShape()->Select(true, &dc);
-      if (redraw)
-        GetShape()->GetCanvas()->Redraw(dc);
+      GetShape()->Select(true);
+      GetShape()->GetCanvas()->Refresh();
     }
   }
   else if (keys & KEY_CTRL)
@@ -501,11 +495,10 @@ void MyEvtHandler::OnDragRight(bool WXUNUSED(draw), double x, double y, int WXUN
   // Force attachment to be zero for now
   attachment = 0;
 
-  wxClientDC dc(GetShape()->GetCanvas());
-  GetShape()->GetCanvas()->PrepareDC(dc);
+  wxShapeCanvasOverlay overlay(GetShape()->GetCanvas());
+  wxDC& dc = overlay.GetDC();
 
   wxPen dottedPen(*wxBLACK, 1, wxPENSTYLE_DOT);
-  dc.SetLogicalFunction(wxINVERT);
   dc.SetPen(dottedPen);
   double xp, yp;
   GetShape()->GetAttachmentPosition(attachment, &xp, &yp);
@@ -514,6 +507,9 @@ void MyEvtHandler::OnDragRight(bool WXUNUSED(draw), double x, double y, int WXUN
 
 void MyEvtHandler::OnEndDragRight(double x, double y, int WXUNUSED(keys), int WXUNUSED(attachment))
 {
+  // Create the overlay just to clear the previously drawn line.
+  wxShapeCanvasOverlay overlay(GetShape()->GetCanvas());
+
   GetShape()->GetCanvas()->ReleaseMouse();
   MyCanvas *canvas = (MyCanvas *)GetShape()->GetCanvas();
 
