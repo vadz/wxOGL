@@ -487,24 +487,13 @@ void MyEvtHandler::OnLeftClick(double WXUNUSED(x), double WXUNUSED(y), int keys,
  * Implement connection of two shapes by right-dragging between them.
  */
 
-void MyEvtHandler::OnBeginDragRight(double x, double y, int WXUNUSED(keys), int attachment)
+void MyEvtHandler::OnBeginDragRight(double x, double y, int keys, int attachment)
 {
-  // Force attachment to be zero for now. Eventually we can deal with
-  // the actual attachment point, e.g. a rectangle side if attachment mode is on.
-  attachment = 0;
-
-  wxClientDC dc(GetShape()->GetCanvas());
-  GetShape()->GetCanvas()->PrepareDC(dc);
-
-  wxPen dottedPen(*wxBLACK, 1, wxPENSTYLE_DOT);
-  dc.SetLogicalFunction(wxINVERT);
-  dc.SetPen(dottedPen);
-  double xp, yp;
-  GetShape()->GetAttachmentPosition(attachment, &xp, &yp);
-  dc.DrawLine((long) xp, (long) yp, (long) x, (long) y);
   GetShape()->GetCanvas()->CaptureMouse();
 
   wxLogStatus("Create new connection by dragging from this shape to another");
+
+  OnDragRight(false, x, y, keys, attachment);
 }
 
 void MyEvtHandler::OnDragRight(bool WXUNUSED(draw), double x, double y, int WXUNUSED(keys), int attachment)
