@@ -1463,45 +1463,15 @@ void wxLineShape::OnSizingDragLeft(wxControlPoint* pt, bool draw, double x, doub
 
 }
 
-void wxLineShape::OnSizingBeginDragLeft(wxControlPoint* pt, double x, double y, int WXUNUSED(keys), int WXUNUSED(attachment))
+void wxLineShape::OnSizingBeginDragLeft(wxControlPoint* pt, double x, double y, int keys, int attachment)
 {
   wxLineControlPoint* lpt = (wxLineControlPoint*) pt;
 
-  wxShapeCanvasOverlay overlay(GetCanvas());
-
-  wxDC& dc = overlay.GetDC();
-
-  wxLineShape *lineShape = (wxLineShape *)this;
   if (lpt->m_type == CONTROL_POINT_LINE)
   {
     lpt->m_originalPos = lpt->m_point;
-    m_canvas->Snap(&x, &y);
-
-    this->Erase(dc);
-
-    // Redraw start and end objects because we've left holes
-    // when erasing the line
-    lineShape->GetFrom()->OnDraw(dc);
-    lineShape->GetFrom()->OnDrawContents(dc);
-    lineShape->GetTo()->OnDraw(dc);
-    lineShape->GetTo()->OnDrawContents(dc);
 
     this->SetDisableLabel(true);
-
-    lpt->m_xpos = x; lpt->m_ypos = y;
-    lpt->m_point.x = x; lpt->m_point.y = y;
-
-    const wxPen *old_pen = lineShape->GetPen();
-    const wxBrush *old_brush = lineShape->GetBrush();
-
-    wxPen dottedPen(*wxBLACK, 1, wxPENSTYLE_DOT);
-    lineShape->SetPen(& dottedPen);
-    lineShape->SetBrush(wxTRANSPARENT_BRUSH);
-
-    lineShape->GetEventHandler()->OnMoveLink(dc, false);
-
-    lineShape->SetPen(old_pen);
-    lineShape->SetBrush(old_brush);
   }
 
   if (lpt->m_type == CONTROL_POINT_ENDPOINT_FROM || lpt->m_type == CONTROL_POINT_ENDPOINT_TO)
@@ -1509,6 +1479,8 @@ void wxLineShape::OnSizingBeginDragLeft(wxControlPoint* pt, double x, double y, 
     m_canvas->SetCursor(wxCursor(wxCURSOR_BULLSEYE));
     lpt->m_oldCursor = wxSTANDARD_CURSOR;
   }
+
+  OnSizingDragLeft(pt, true, x, y, keys, attachment);
 }
 
 void wxLineShape::OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, int WXUNUSED(keys), int WXUNUSED(attachment))
