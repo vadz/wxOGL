@@ -973,7 +973,25 @@ void wxLineShape::RouteLine()
     SetEnds(end_x, end_y, other_end_x, other_end_y);
 
     // Update intermediate points, if any.
-    Initialise();
+    if ( GetMaintainStraightLines() && m_lineControlPoints.size() == 3 )
+    {
+        const wxRealPoint first = m_lineControlPoints.front();
+        const wxRealPoint last = m_lineControlPoints.back();
+        wxRealPoint& middle = m_lineControlPoints.at(1);
+
+        // For now always create a line starting with a horizontal segment.
+        // We need to improve this to take the current middle point position
+        // into account and start with a vertical segment if it's closer to the
+        // existing shape.
+        middle.x = last.x;
+        middle.y = first.y;
+    }
+    else
+    {
+        // Just initialize them once to ensure they have valid positions, but
+        // don't touch them otherwise.
+        Initialise();
+    }
 }
 
 void wxLineShape::OnMoveLink(wxDC& dc, bool moveControlPoints)

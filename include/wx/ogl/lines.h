@@ -145,7 +145,7 @@ class WXDLLIMPEXP_OGL wxLineShape: public wxShape
   // Straighten verticals and horizontals
   virtual void Straighten(wxDC* dc = nullptr);
 
-  // Not implemented
+  // Only implemented for lines with 3 control points currently.
   inline void SetMaintainStraightLines(bool flag) { m_maintainStraightLines = flag; }
   inline bool GetMaintainStraightLines() const { return m_maintainStraightLines; }
 
