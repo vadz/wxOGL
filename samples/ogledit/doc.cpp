@@ -149,12 +149,17 @@ DiagramCommand* DiagramCommand::AddShape(DiagramDocument* ddoc, wxClassInfo* ci,
 }
 
 /* static */
-DiagramCommand* DiagramCommand::AddLine(DiagramDocument* ddoc, wxShape* from, wxShape* to)
+DiagramCommand*
+DiagramCommand::AddLine(DiagramDocument* ddoc,
+                        wxShape* from, int attachmentFrom,
+                        wxShape* to, int attachmentTo)
 {
     auto const command = new DiagramCommand(_T("wxLineShape"), OGLEDIT_ADD_LINE, ddoc);
     command->shapeInfo = wxCLASSINFO(wxLineShape);
     command->fromShape = from;
+    command->attachmentFrom = attachmentFrom;
     command->toShape = to;
+    command->attachmentTo = attachmentTo;
 
     return command;
 }
@@ -273,6 +278,8 @@ bool DiagramCommand::Do(void)
         theShape->SetBrush(wxRED_BRUSH);
 
         wxLineShape *lineShape = (wxLineShape *)theShape;
+
+        lineShape->SetAttachments(attachmentFrom, attachmentTo);
 
         // Yes, you can have more than 2 control points, in which case
         // it becomes a multi-segment line.
@@ -498,9 +505,6 @@ void MyEvtHandler::OnBeginDragRight(double x, double y, int keys, int attachment
 
 void MyEvtHandler::OnDragRight(bool WXUNUSED(draw), double x, double y, int WXUNUSED(keys), int attachment)
 {
-  // Force attachment to be zero for now
-  attachment = 0;
-
   wxShapeCanvasOverlay overlay(GetShape()->GetCanvas());
   wxDC& dc = overlay.GetDC();
 
@@ -511,7 +515,7 @@ void MyEvtHandler::OnDragRight(bool WXUNUSED(draw), double x, double y, int WXUN
   dc.DrawLine((long) xp, (long) yp, (long) x, (long) y);
 }
 
-void MyEvtHandler::OnEndDragRight(double x, double y, int WXUNUSED(keys), int WXUNUSED(attachment))
+void MyEvtHandler::OnEndDragRight(double x, double y, int WXUNUSED(keys), int attachment)
 {
   GetShape()->GetCanvas()->ClearHints();
 
@@ -526,7 +530,7 @@ void MyEvtHandler::OnEndDragRight(double x, double y, int WXUNUSED(keys), int WX
   {
     canvas->view->GetDocument()->GetCommandProcessor()->Submit(
       DiagramCommand::AddLine((DiagramDocument *)canvas->view->GetDocument(),
-      GetShape(), otherShape));
+      GetShape(), attachment, otherShape, new_attachment));
 
     wxLogStatus("New connection created");
   }

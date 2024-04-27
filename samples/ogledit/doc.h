@@ -146,7 +146,9 @@ private:
   int const cmd;
   wxShape *shape = NULL; // Pointer to the shape we're acting on
   wxShape *fromShape = NULL;
+  int attachmentFrom = 0;
   wxShape *toShape = NULL;
+  int attachmentTo = 0;
   wxClassInfo *shapeInfo = NULL;
   double x = 0.;
   double y = 0.;
@@ -160,7 +162,7 @@ private:
  public:
   // Static constructors for various operations.
   static DiagramCommand* AddShape(DiagramDocument* ddoc, wxClassInfo* ci, double x, double y);
-  static DiagramCommand* AddLine(DiagramDocument* ddoc, wxShape* from, wxShape* to);
+  static DiagramCommand* AddLine(DiagramDocument* ddoc, wxShape* from, int attachmentFrom, wxShape* to, int attachmentTo);
   static DiagramCommand* Cut(DiagramDocument* ddoc, bool sel, wxShape* theShape);
   static DiagramCommand* ChangeColour(DiagramDocument *ddoc, wxBrush *backgroundColour, wxShape *theShape);
   static DiagramCommand* ChangeLabel(DiagramDocument *ddoc, const wxString& lab, wxShape *theShape);
