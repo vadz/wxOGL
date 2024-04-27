@@ -701,29 +701,8 @@ bool csEvtHandler::EditProperties()
 }
 
 /*
- * Diagram
+ * Shapes
  */
-
-#if wxUSE_PROLOGIO
-bool csDiagram::OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
-{
-  wxDiagram::OnShapeSave(db, shape, expr);
-  csEvtHandler *handler = (csEvtHandler *)shape.GetEventHandler();
-  expr.AddAttributeValueString(_T("label"), handler->m_label);
-  return true;
-}
-
-bool csDiagram::OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
-{
-  wxDiagram::OnShapeLoad(db, shape, expr);
-  wxString label = wxEmptyString;
-  expr.GetAttributeValue(_T("label"), label);
-  csEvtHandler *handler = new csEvtHandler(&shape, &shape, label);
-  shape.SetEventHandler(handler);
-
-  return true;
-}
-#endif // wxUSE_PROLOGIO
 
 IMPLEMENT_DYNAMIC_CLASS(csThinRectangleShape, wxDrawnShape)
 

@@ -49,57 +49,6 @@ bool csDiagramDocument::OnCloseDocument()
   return true;
 }
 
-#if wxUSE_PROLOGIO
-bool csDiagramDocument::OnSaveDocument(const wxString& file)
-{
-  if (file == wxEmptyString)
-    return false;
-
-  if (!m_diagram.SaveFile(file))
-  {
-    wxString msgTitle;
-    if (wxTheApp->GetAppName() != wxEmptyString)
-        msgTitle = wxTheApp->GetAppName();
-    else
-        msgTitle = wxString(_T("File error"));
-
-    (void)wxMessageBox(_T("Sorry, could not open this file for saving."), msgTitle, wxOK | wxICON_EXCLAMATION,
-      GetDocumentWindow());
-    return false;
-  }
-
-  Modify(false);
-  SetFilename(file);
-  return true;
-}
-
-bool csDiagramDocument::OnOpenDocument(const wxString& file)
-{
-  if (!OnSaveModified())
-    return false;
-
-  wxString msgTitle;
-  if (wxTheApp->GetAppName() != wxEmptyString)
-    msgTitle = wxTheApp->GetAppName();
-  else
-    msgTitle = wxString(_T("File error"));
-
-  m_diagram.DeleteAllShapes();
-  if (!m_diagram.LoadFile(file))
-  {
-    (void)wxMessageBox(_T("Sorry, could not open this file."), msgTitle, wxOK|wxICON_EXCLAMATION,
-     GetDocumentWindow());
-    return false;
-  }
-  SetFilename(file, true);
-  Modify(false);
-  UpdateAllViews();
-
-  return true;
-}
-#endif // wxUSE_PROLOGIO
-
-
 /*
  * Implementation of drawing command
  */

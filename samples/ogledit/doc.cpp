@@ -46,85 +46,19 @@ bool DiagramDocument::OnCloseDocument(void)
     return true;
 }
 
-#if wxUSE_STD_IOSTREAM
 wxSTD ostream& DiagramDocument::SaveObject(wxSTD ostream& stream)
 {
-#if wxUSE_PROLOGIO
-
-    wxDocument::SaveObject(stream);
-
-    char buf[400];
-    (void) wxGetTempFileName("diag", buf);
-
-    diagram.SaveFile(buf);
-    wxTransferFileToStream(buf, stream);
-
-    wxRemoveFile(buf);
-
-#endif
+    wxLogWarning("Sorry, saving is not implemented yet");
 
     return stream;
 }
 
 wxSTD istream& DiagramDocument::LoadObject(wxSTD istream& stream)
 {
-#if wxUSE_PROLOGIO
-
-    wxDocument::LoadObject(stream);
-
-    char buf[400];
-    (void) wxGetTempFileName("diag", buf);
-
-    wxTransferStreamToFile(stream, buf);
-
-    diagram.DeleteAllShapes();
-    diagram.LoadFile(buf);
-    wxRemoveFile(buf);
-
-#endif
+    wxLogWarning("Sorry, loading is not implemented yet");
 
     return stream;
 }
-#else
-
-wxOutputStream& DiagramDocument::SaveObject(wxOutputStream& stream)
-{
-#if wxUSE_PROLOGIO
-
-    wxDocument::SaveObject(stream);
-    wxChar buf[400];
-    (void) wxGetTempFileName(_T("diag"), buf);
-
-    diagram.SaveFile(buf);
-
-    wxTransferFileToStream(buf, stream);
-
-    wxRemoveFile(buf);
-
-#endif
-
-    return stream;
-}
-
-wxInputStream& DiagramDocument::LoadObject(wxInputStream& stream)
-{
-#if wxUSE_PROLOGIO
-    wxDocument::LoadObject(stream);
-
-    wxChar buf[400];
-    (void) wxGetTempFileName(_T("diag"), buf);
-
-    wxTransferStreamToFile(stream, buf);
-
-    diagram.DeleteAllShapes();
-    diagram.LoadFile(buf);
-    wxRemoveFile(buf);
-#endif
-
-    return stream;
-}
-
-#endif
 
 /*
  * Implementation of drawing command
@@ -543,36 +477,6 @@ void MyEvtHandler::OnEndSize(double WXUNUSED(x), double WXUNUSED(y))
 
   GetShape()->FormatText(dc, /* (char*) (const char*) */ label);
 }
-
-/*
- * Diagram
- */
-
-#if wxUSE_PROLOGIO
-
-bool MyDiagram::OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
-{
-  wxDiagram::OnShapeSave(db, shape, expr);
-  MyEvtHandler *handler = (MyEvtHandler *)shape.GetEventHandler();
-  expr.AddAttributeValueString(_T("label"), handler->label);
-  return true;
-}
-
-bool MyDiagram::OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
-{
-  wxDiagram::OnShapeLoad(db, shape, expr);
-  wxChar *label = NULL;
-  expr.AssignAttributeValue(_T("label"), &label);
-  MyEvtHandler *handler = new MyEvtHandler(&shape, &shape, wxString(label));
-  shape.SetEventHandler(handler);
-
-  if (label)
-    delete[] label;
-  return true;
-}
-
-#endif
-
 /*
  * New shapes
  */
