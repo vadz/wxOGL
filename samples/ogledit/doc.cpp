@@ -513,8 +513,7 @@ void MyEvtHandler::OnDragRight(bool WXUNUSED(draw), double x, double y, int WXUN
 
 void MyEvtHandler::OnEndDragRight(double x, double y, int WXUNUSED(keys), int WXUNUSED(attachment))
 {
-  // Create the overlay just to clear the previously drawn line.
-  wxShapeCanvasOverlay overlay(GetShape()->GetCanvas());
+  GetShape()->GetCanvas()->ClearHints();
 
   GetShape()->GetCanvas()->ReleaseMouse();
   MyCanvas *canvas = (MyCanvas *)GetShape()->GetCanvas();
