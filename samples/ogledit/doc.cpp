@@ -503,6 +503,8 @@ void MyEvtHandler::OnBeginDragRight(double x, double y, int WXUNUSED(keys), int 
   GetShape()->GetAttachmentPosition(attachment, &xp, &yp);
   dc.DrawLine((long) xp, (long) yp, (long) x, (long) y);
   GetShape()->GetCanvas()->CaptureMouse();
+
+  wxLogStatus("Create new connection by dragging from this shape to another");
 }
 
 void MyEvtHandler::OnDragRight(bool WXUNUSED(draw), double x, double y, int WXUNUSED(keys), int attachment)
@@ -535,6 +537,8 @@ void MyEvtHandler::OnEndDragRight(double x, double y, int WXUNUSED(keys), int WX
     canvas->view->GetDocument()->GetCommandProcessor()->Submit(
       new DiagramCommand(_T("wxLineShape"), OGLEDIT_ADD_LINE, (DiagramDocument *)canvas->view->GetDocument(), CLASSINFO(wxLineShape),
       0.0, 0.0, false, NULL, GetShape(), otherShape));
+
+    wxLogStatus("New connection created");
   }
 }
 
