@@ -137,30 +137,33 @@ class DiagramDocument: public wxDocument
 
 class DiagramCommand: public wxCommand
 {
+private:
+  // Constructor providing the required parameters for all commands.
+  DiagramCommand(const wxString& name, int command, DiagramDocument* ddoc);
+
  protected:
-  DiagramDocument *doc;
-  int cmd;
-  wxShape *shape; // Pointer to the shape we're acting on
-  wxShape *fromShape;
-  wxShape *toShape;
-  wxClassInfo *shapeInfo;
-  double x;
-  double y;
-  bool selected;
-  bool deleteShape;
+  DiagramDocument* const doc;
+  int const cmd;
+  wxShape *shape = NULL; // Pointer to the shape we're acting on
+  wxShape *fromShape = NULL;
+  wxShape *toShape = NULL;
+  wxClassInfo *shapeInfo = NULL;
+  double x = 0.;
+  double y = 0.;
+  bool selected = false;
+  bool deleteShape = false;
 
   // Storage for property commands
-  const wxBrush *shapeBrush;
-  wxPen *shapePen;
+  const wxBrush *shapeBrush = NULL;
+  wxPen *shapePen = NULL;
   wxString shapeLabel;
  public:
-  // Multi-purpose constructor for creating, deleting shapes
-  DiagramCommand(const wxString& name, int cmd, DiagramDocument *ddoc, wxClassInfo *shapeInfo = NULL,
-     double x = 0.0, double y = 0.0, bool sel = false, wxShape *theShape = NULL, wxShape *fs = NULL, wxShape *ts = NULL);
-
-  // Property-changing command constructors
-  DiagramCommand(const wxString& name, int cmd, DiagramDocument *ddoc, wxBrush *backgroundColour, wxShape *theShape);
-  DiagramCommand(const wxString& name, int cmd, DiagramDocument *ddoc, const wxString& lab, wxShape *theShape);
+  // Static constructors for various operations.
+  static DiagramCommand* AddShape(DiagramDocument* ddoc, wxClassInfo* ci, double x, double y);
+  static DiagramCommand* AddLine(DiagramDocument* ddoc, wxShape* from, wxShape* to);
+  static DiagramCommand* Cut(DiagramDocument* ddoc, bool sel, wxShape* theShape);
+  static DiagramCommand* ChangeColour(DiagramDocument *ddoc, wxBrush *backgroundColour, wxShape *theShape);
+  static DiagramCommand* ChangeLabel(DiagramDocument *ddoc, const wxString& lab, wxShape *theShape);
 
   ~DiagramCommand(void);
 

@@ -130,57 +130,63 @@ wxInputStream& DiagramDocument::LoadObject(wxInputStream& stream)
  * Implementation of drawing command
  */
 
-DiagramCommand::DiagramCommand(const wxString& name, int command, DiagramDocument *ddoc, wxClassInfo *info, double xx, double yy,
-                               bool sel, wxShape *theShape, wxShape *fs, wxShape *ts)
-               :wxCommand(true, name)
+DiagramCommand::DiagramCommand(const wxString& name, int command, DiagramDocument *ddoc)
+               :wxCommand(true, name),
+                doc(ddoc),
+                cmd(command)
 {
-    doc = ddoc;
-    cmd = command;
-    shape = theShape;
-    fromShape = fs;
-    toShape = ts;
-    shapeInfo = info;
-    shapeBrush = NULL;
-    shapePen = NULL;
-    x = xx;
-    y = yy;
-    selected = sel;
-    deleteShape = false;
 }
 
-DiagramCommand::DiagramCommand(const wxString& name, int command, DiagramDocument *ddoc, wxBrush *backgroundColour, wxShape *theShape)
-               :wxCommand(true, name)
+/* static */
+DiagramCommand* DiagramCommand::AddShape(DiagramDocument* ddoc, wxClassInfo* ci, double x, double y)
 {
-    doc = ddoc;
-    cmd = command;
-    shape = theShape;
-    fromShape = NULL;
-    toShape = NULL;
-    shapeInfo = NULL;
-    x = 0.0;
-    y = 0.0;
-    selected = false;
-    deleteShape = false;
-    shapeBrush = backgroundColour;
-    shapePen = NULL;
+    auto const command = new DiagramCommand(ci->GetClassName(), OGLEDIT_ADD_SHAPE, ddoc);
+    command->shapeInfo = ci;
+    command->x = x;
+    command->y = y;
+
+    return command;
 }
 
-DiagramCommand::DiagramCommand(const wxString& name, int command, DiagramDocument *ddoc, const wxString& lab, wxShape *theShape)
-               :wxCommand(true, name)
+/* static */
+DiagramCommand* DiagramCommand::AddLine(DiagramDocument* ddoc, wxShape* from, wxShape* to)
 {
-    doc = ddoc;
-    cmd = command;
-    shape = theShape;
-    fromShape = NULL;
-    toShape = NULL;
-    shapeInfo = NULL;
-    x = 0.0;
-    y = 0.0;
-    selected = false;
-    deleteShape = false;
-    shapeBrush = NULL;
-    shapePen = NULL;
-    shapeLabel = lab;
+    auto const command = new DiagramCommand(_T("wxLineShape"), OGLEDIT_ADD_LINE, ddoc);
+    command->shapeInfo = wxCLASSINFO(wxLineShape);
+    command->fromShape = from;
+    command->toShape = to;
+
+    return command;
+}
+
+/* static */
+DiagramCommand* DiagramCommand::Cut(DiagramDocument* ddoc, bool sel, wxShape* theShape)
+{
+    auto const command = new DiagramCommand(_T("Cut"), wxID_CUT, ddoc);
+    command->selected = sel;
+    command->shape = theShape;
+
+    return command;
+}
+
+/* static */
+DiagramCommand* DiagramCommand::ChangeColour(DiagramDocument* ddoc, wxBrush* brush, wxShape* theShape)
+{
+    auto const command = new DiagramCommand(_T("Change colour"), OGLEDIT_CHANGE_BACKGROUND_COLOUR, ddoc);
+    command->shape = theShape;
+    command->shapeBrush = brush;
+
+    return command;
+}
+
+/* static */
+DiagramCommand* DiagramCommand::ChangeLabel(DiagramDocument* ddoc, const wxString& label, wxShape* theShape)
+{
+    auto const command = new DiagramCommand(_T("Edit label"), OGLEDIT_EDIT_LABEL, ddoc);
+    command->shape = theShape;
+    command->shapeLabel = label;
+
+    return command;
 }
 
 DiagramCommand::~DiagramCommand(void)
@@ -425,7 +431,7 @@ void DiagramCommand::RemoveLines(wxShape *shapeFrom)
   while (node)
   {
     wxLineShape *line = (wxLineShape *)node->GetData();
-    doc->GetCommandProcessor()->Submit(new DiagramCommand(_T("Cut"), wxID_CUT, doc, NULL, 0.0, 0.0, line->Selected(), line));
+    doc->GetCommandProcessor()->Submit(DiagramCommand::Cut(doc, line->Selected(), line));
 
     node = shapeFrom->GetLines().GetFirst();
   }
@@ -520,8 +526,8 @@ void MyEvtHandler::OnEndDragRight(double x, double y, int WXUNUSED(keys), int WX
   if (otherShape && !otherShape->IsKindOf(CLASSINFO(wxLineShape)))
   {
     canvas->view->GetDocument()->GetCommandProcessor()->Submit(
-      new DiagramCommand(_T("wxLineShape"), OGLEDIT_ADD_LINE, (DiagramDocument *)canvas->view->GetDocument(), CLASSINFO(wxLineShape),
-      0.0, 0.0, false, NULL, GetShape(), otherShape));
+      DiagramCommand::AddLine((DiagramDocument *)canvas->view->GetDocument(),
+      GetShape(), otherShape));
 
     wxLogStatus("New connection created");
   }
