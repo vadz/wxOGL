@@ -126,12 +126,8 @@ void wxLineShape::Initialise()
 {
   if (m_lineControlPoints.size() > 2)
   {
-    // Just move the first and last control points
-    const auto first = m_lineControlPoints.begin();
-    const wxRealPoint first_point = *first;
-
-    const auto last = m_lineControlPoints.rbegin();
-    const wxRealPoint last_point = *last;
+    const wxRealPoint first_point = m_lineControlPoints.front();
+    const wxRealPoint last_point = m_lineControlPoints.back();
 
     // If any of the line points are at -999, we must
     // initialize them by placing them half way between the first
