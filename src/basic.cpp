@@ -1770,7 +1770,7 @@ void wxShape::CopyWithHandler(wxShape& copy)
 }
 
 
-// Default - make 6 control points
+// Default - make 8 control points on the perimeter of the shape.
 void wxShape::MakeControlPoints()
 {
   double maxX, maxY, minX, minY;
