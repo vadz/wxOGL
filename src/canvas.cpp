@@ -322,7 +322,7 @@ void wxShapeCanvas::OnMouseEvent(wxMouseEvent& event)
   }
 }
 
-void wxShapeCanvas::OnCaptureLost(wxMouseCaptureLostEvent& WXUNUSED(event))
+void wxShapeCanvas::EndDrag()
 {
     // Make sure we relinquish the mouse capture if we have it.
     if ( HasCapture() )
@@ -330,6 +330,11 @@ void wxShapeCanvas::OnCaptureLost(wxMouseCaptureLostEvent& WXUNUSED(event))
 
     // And erase everything we could have drawn while dragging.
     ClearHints();
+}
+
+void wxShapeCanvas::OnCaptureLost(wxMouseCaptureLostEvent& WXUNUSED(event))
+{
+    EndDrag();
 }
 
 /*

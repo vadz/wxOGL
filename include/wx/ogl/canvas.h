@@ -73,6 +73,9 @@ class WXDLLIMPEXP_OGL wxShapeCanvas: public wxScrolledWindow
   // Clear any temporarily drawn hints.
   void ClearHints() { m_overlay.Reset(); }
 
+  // Release mouse and clear hints.
+  void EndDrag();
+
   // Events
   void OnPaint(wxPaintEvent& event);
   void OnMouseEvent(wxMouseEvent& event);

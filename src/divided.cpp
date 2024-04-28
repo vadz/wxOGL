@@ -604,6 +604,8 @@ void wxDividedShapeControlPoint::OnBeginDragLeft(double WXUNUSED(x), double y, i
 
 void wxDividedShapeControlPoint::OnEndDragLeft(double WXUNUSED(x), double y, int WXUNUSED(keys), int WXUNUSED(attachment))
 {
+    GetCanvas()->EndDrag();
+
     wxClientDC dc(GetCanvas());
     GetCanvas()->PrepareDC(dc);
 
@@ -614,8 +616,6 @@ void wxDividedShapeControlPoint::OnEndDragLeft(double WXUNUSED(x), double y, int
 
     wxShapeRegion *thisRegion = (wxShapeRegion *)node->GetData();
     wxShapeRegion *nextRegion = nullptr; // Region below this one
-
-    m_canvas->ReleaseMouse();
 
     // Find the old top and bottom of this region,
     // and calculate the new proportion for this region

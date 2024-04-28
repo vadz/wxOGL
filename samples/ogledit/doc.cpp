@@ -454,10 +454,9 @@ void MyEvtHandler::OnDragRight(bool draw, double x, double y, int WXUNUSED(keys)
 
 void MyEvtHandler::OnEndDragRight(double x, double y, int WXUNUSED(keys), int attachment)
 {
-  GetShape()->GetCanvas()->ClearHints();
-
-  GetShape()->GetCanvas()->ReleaseMouse();
   MyCanvas *canvas = (MyCanvas *)GetShape()->GetCanvas();
+
+  canvas->EndDrag();
 
   // Check if we're on an object
   int new_attachment;

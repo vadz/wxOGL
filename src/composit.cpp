@@ -226,12 +226,10 @@ void wxCompositeShape::OnBeginDragLeft(double x, double y, int WXUNUSED(keys), i
 
 void wxCompositeShape::OnEndDragLeft(double x, double y, int keys, int WXUNUSED(attachment))
 {
-//  wxShape::OnEndDragLeft(x, y, keys, attachment);
+  GetCanvas()->EndDrag();
 
   wxClientDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
-
-  m_canvas->ReleaseMouse();
 
   if (!m_draggable)
   {
@@ -786,7 +784,8 @@ void wxDivisionShape::OnBeginDragLeft(double x, double y, int keys, int attachme
 
 void wxDivisionShape::OnEndDragLeft(double x, double y, int keys, int attachment)
 {
-  m_canvas->ReleaseMouse();
+  GetCanvas()->EndDrag();
+
   if ((m_sensitivity & OP_DRAG_LEFT) != OP_DRAG_LEFT)
   {
     attachment = 0;
