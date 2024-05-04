@@ -89,6 +89,9 @@ void wxShapeCanvas::OnPaint(wxPaintEvent& WXUNUSED(event))
 
 void wxShapeCanvas::OnMouseEvent(wxMouseEvent& event)
 {
+  if (!GetDiagram())
+    return;
+
   wxClientDC dc(this);
   PrepareDC(dc);
 
@@ -391,6 +394,9 @@ static bool WhollyContains(wxShape *contains, wxShape *contained)
 
 wxShape *wxShapeCanvas::FindShape(double x, double y, int *attachment, wxClassInfo *info, wxShape *notObject)
 {
+  if (!GetDiagram())
+    return nullptr;
+
   double nearest = 100000.0;
   int nearest_attachment = 0;
   wxShape *nearest_object = nullptr;
