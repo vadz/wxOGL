@@ -17,7 +17,11 @@ set(wxogl_SOURCES
 
 add_library(wxogl ${wxogl_SOURCES})
 
-target_compile_definitions(wxogl PUBLIC ${wxWidgets_DEFINITIONS})
-target_include_directories(wxogl PUBLIC ${wxWidgets_INCLUDE_DIRS})
+if(WXOGL_IS_TOP_PROJECT)
+    target_compile_definitions(wxogl PUBLIC ${wxWidgets_DEFINITIONS})
+    target_include_directories(wxogl PUBLIC ${wxWidgets_INCLUDE_DIRS})
+else()
+    target_link_libraries(wxogl PRIVATE wx::core wx::base)
+endif()
 
 target_include_directories(wxogl PUBLIC ../include)
