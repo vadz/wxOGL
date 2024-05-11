@@ -12,6 +12,11 @@
 #ifndef _OGL_BASIC_H_
 #define _OGL_BASIC_H_
 
+#include "wx/ogl/defs.h"
+
+#include "wx/clntdata.h"
+#include "wx/dc.h"
+
 #define OGL_VERSION     2.0
 
 #ifndef DEFAULT_MOUSE_TOLERANCE
