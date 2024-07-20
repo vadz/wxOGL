@@ -92,7 +92,7 @@ void wxShapeCanvas::OnMouseEvent(wxMouseEvent& event)
   if (!GetDiagram())
     return;
 
-  wxClientDC dc(this);
+  wxInfoDC dc(this);
   PrepareDC(dc);
 
   wxPoint logPos(event.GetLogicalPosition(dc));

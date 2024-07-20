@@ -46,7 +46,6 @@ wxLineShape::wxLineShape()
 */
   m_from = nullptr;
   m_to = nullptr;
-  m_erasing = false;
   m_arrowSpacing = 5.0; // For the moment, don't bother saving this to file.
   m_ignoreArrowOffsets = false;
   m_isSpline = false;
@@ -158,7 +157,7 @@ void wxLineShape::Initialise()
 
 // Format a text string according to the region size, adding
 // strings with positions to region text list
-void wxLineShape::FormatText(wxDC& dc, const wxString& s, int i)
+void wxLineShape::FormatText(wxReadOnlyDC& dc, const wxString& s, int i)
 {
   double w, h;
   ClearText(i);
@@ -212,8 +211,8 @@ void wxLineShape::FormatText(wxDC& dc, const wxString& s, int i)
 
       if (m_labelObjects[i])
       {
-        m_labelObjects[i]->Select(true, & dc);
-        m_labelObjects[i]->Draw(dc);
+        m_labelObjects[i]->Select(true);
+        m_labelObjects[i]->Redraw();
       }
     }
   }
@@ -258,7 +257,7 @@ void wxLineShape::DrawRegion(wxDC& dc, wxShapeRegion *region, double x, double y
   }
 }
 
-void wxLineShape::EraseRegion(wxDC& dc, wxShapeRegion *region, double x, double y)
+void wxLineShape::EraseRegion(wxReadOnlyDC& WXUNUSED(dc), wxShapeRegion *region, double x, double y)
 {
   if (GetDisableLabel())
     return;
@@ -275,10 +274,7 @@ void wxLineShape::EraseRegion(wxDC& dc, wxShapeRegion *region, double x, double 
 
   if (region->GetFormattedText().GetCount() > 0)
   {
-      dc.SetPen(GetBackgroundPen());
-      dc.SetBrush(GetBackgroundBrush());
-
-      dc.DrawRectangle((long)(xp - w/2.0), (long)(yp - h/2.0), (long)w, (long)h);
+      RefreshRect(xp - w/2.0, yp - h/2.0, w, h);
   }
 }
 
@@ -766,18 +762,7 @@ void wxLineShape::DrawArrow(wxDC& dc, wxArrowHead *arrow, double xOffset, bool p
         if (arrow->GetMetaFile()->GetRotateable())
           arrow->GetMetaFile()->Rotate(0.0, 0.0, theta);
 
-        if (m_erasing)
-        {
-          // If erasing, just draw a rectangle.
-          double minX, minY, maxX, maxY;
-          arrow->GetMetaFile()->GetBounds(&minX, &minY, &maxX, &maxY);
-          // Make erasing rectangle slightly bigger or you get droppings.
-          int extraPixels = 4;
-          dc.DrawRectangle((long)(deltaX + x + minX - (extraPixels/2.0)), (long)(deltaY + y + minY - (extraPixels/2.0)),
-                           (long)(maxX - minX + extraPixels), (long)(maxY - minY + extraPixels));
-        }
-        else
-          arrow->GetMetaFile()->Draw(dc, x+deltaX, y+deltaY);
+        arrow->GetMetaFile()->Draw(dc, x+deltaX, y+deltaY);
       }
       break;
     }
@@ -787,18 +772,10 @@ void wxLineShape::DrawArrow(wxDC& dc, wxArrowHead *arrow, double xOffset, bool p
   }
 }
 
-void wxLineShape::OnErase(wxDC& dc)
+void wxLineShape::OnErase(wxReadOnlyDC& dc)
 {
-    const wxPen *old_pen = m_pen;
-    const wxBrush *old_brush = m_brush;
-    wxPen bg_pen = GetBackgroundPen();
-    wxBrush bg_brush = GetBackgroundBrush();
-    SetPen(&bg_pen);
-    SetBrush(&bg_brush);
-
     double bound_x, bound_y;
     GetBoundingBoxMax(&bound_x, &bound_y);
-    if (m_font) dc.SetFont(* m_font);
 
     // Undraw text regions
     for (int i = 0; i < 3; i++)
@@ -814,26 +791,8 @@ void wxLineShape::OnErase(wxDC& dc)
     }
 
     // Undraw line
-    dc.SetPen(GetBackgroundPen());
-    dc.SetBrush(GetBackgroundBrush());
-
-    // Drawing over the line only seems to work if the line has a thickness
-    // of 1.
-    if (old_pen && (old_pen->GetWidth() > 1))
-    {
-      dc.DrawRectangle((long)(m_xpos - (bound_x/2.0) - 2.0), (long)(m_ypos - (bound_y/2.0) - 2.0),
-                        (long)(bound_x+4.0),  (long)(bound_y+4.0));
-    }
-    else
-    {
-      m_erasing = true;
-      GetEventHandler()->OnDraw(dc);
-      GetEventHandler()->OnEraseControlPoints(dc);
-      m_erasing = false;
-    }
-
-    if (old_pen) SetPen(old_pen);
-    if (old_brush) SetBrush(old_brush);
+    GetEventHandler()->OnEraseControlPoints(dc);
+    Redraw();
 }
 
 void wxLineShape::GetBoundingBoxMin(double *w, double *h)
@@ -920,7 +879,7 @@ void wxLineShape::OnDrawOutline(wxDC& dc, double WXUNUSED(x), double WXUNUSED(y)
   else SetBrush(nullptr);
 }
 
-bool wxLineShape::OnMovePre(wxDC& dc, double x, double y, double old_x, double old_y, bool WXUNUSED(display))
+bool wxLineShape::OnMovePre(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool WXUNUSED(display))
 {
   double x_offset = x - old_x;
   double y_offset = y - old_y;
@@ -1006,7 +965,7 @@ void wxLineShape::RouteLine()
     }
 }
 
-void wxLineShape::OnMoveLink(wxDC& dc, bool moveControlPoints)
+void wxLineShape::OnMoveLink(wxReadOnlyDC& dc, bool moveControlPoints)
 {
   if (!m_from || !m_to)
    return;
@@ -1174,7 +1133,7 @@ void wxLineShape::OnDrawControlPoints(wxDC& dc)
   wxShape::OnDrawControlPoints(dc);
 }
 
-void wxLineShape::OnEraseControlPoints(wxDC& dc)
+void wxLineShape::OnEraseControlPoints(wxReadOnlyDC& dc)
 {
   // Erase temporary label rectangles if necessary
   for (int i = 0; i < 3; i++)
@@ -1338,7 +1297,7 @@ void wxLineShape::Copy(wxShape& copy)
 }
 
 // Override select, to create/delete temporary label-moving objects
-void wxLineShape::Select(bool select, wxDC* dc)
+void wxLineShape::Select(bool select, wxReadOnlyDC* dc)
 {
   wxShape::Select(select, dc);
   if (select)
@@ -1498,7 +1457,7 @@ void wxLineShape::OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, in
 {
   wxLineControlPoint* lpt = (wxLineControlPoint*) pt;
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   this->SetDisableLabel(false);
@@ -1582,7 +1541,7 @@ void wxLineShape::UpdateMiddleControlPoint(wxLineControlPoint* lpt, const wxReal
 }
 
 // This is called only when a non-end control point is moved.
-bool wxLineShape::OnMoveMiddleControlPoint(wxDC& dc, wxLineControlPoint* lpt, const wxRealPoint& pt)
+bool wxLineShape::OnMoveMiddleControlPoint(wxReadOnlyDC& dc, wxLineControlPoint* lpt, const wxRealPoint& pt)
 {
     UpdateMiddleControlPoint(lpt, pt);
 
@@ -1605,7 +1564,7 @@ void wxLineControlPoint::OnDragRight(bool draw, double x, double y, int keys, in
 
 void wxLineControlPoint::OnBeginDragRight(double x, double y, int keys, int attachment)
 {
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   wxLineShape *lineShape = (wxLineShape *)m_shape;
@@ -1630,7 +1589,7 @@ void wxLineControlPoint::OnBeginDragRight(double x, double y, int keys, int atta
 
 void wxLineControlPoint::OnEndDragRight(double x, double y, int keys, int attachment)
 {
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   wxLineShape *lineShape = (wxLineShape *)m_shape;
@@ -2147,12 +2106,12 @@ void wxLabelShape::OnEndDragLeft(double x, double y, int keys, int attachment)
   wxRectangleShape::OnEndDragLeft(x, y, keys, attachment);
 }
 
-bool wxLabelShape::OnMovePre(wxDC& dc, double x, double y, double old_x, double old_y, bool display)
+bool wxLabelShape::OnMovePre(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool display)
 {
     return m_lineShape->OnLabelMovePre(dc, this, x, y, old_x, old_y, display);
 }
 
-bool wxLineShape::OnLabelMovePre(wxDC& dc, wxLabelShape* labelShape, double x, double y, double WXUNUSED(old_x), double WXUNUSED(old_y), bool WXUNUSED(display))
+bool wxLineShape::OnLabelMovePre(wxReadOnlyDC& dc, wxLabelShape* labelShape, double x, double y, double WXUNUSED(old_x), double WXUNUSED(old_y), bool WXUNUSED(display))
 {
   labelShape->m_shapeRegion->SetSize(labelShape->GetWidth(), labelShape->GetHeight());
 
@@ -2184,7 +2143,6 @@ bool wxLineShape::OnLabelMovePre(wxDC& dc, wxLabelShape* labelShape, double x, d
 
     wxString s(labelShape->m_shapeRegion->GetText());
     labelShape->FormatText(dc, s, i);
-    DrawRegion(dc, labelShape->m_shapeRegion, xx, yy);
   }
   return true;
 }

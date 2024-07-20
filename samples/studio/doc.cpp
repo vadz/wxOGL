@@ -228,7 +228,7 @@ bool csCommandState::Do()
             lineShape->SetTo(lineTo);
             lineShape->SetAttachments(attachmentFrom, attachmentTo);
 
-            wxClientDC dc(canvas);
+            wxInfoDC dc(canvas);
             canvas->PrepareDC(dc);
 
             lineFrom->MoveLinks(dc);
@@ -258,7 +258,7 @@ bool csCommandState::Do()
         m_doc->GetDiagram()->AddShape(m_shapeOnCanvas);
         m_shapeOnCanvas->Show(true);
 
-        wxClientDC dc(m_shapeOnCanvas->GetCanvas());
+        wxInfoDC dc(m_shapeOnCanvas->GetCanvas());
         m_shapeOnCanvas->GetCanvas()->PrepareDC(dc);
 
         csEvtHandler *handler = (csEvtHandler *)m_shapeOnCanvas->GetEventHandler();
@@ -268,7 +268,7 @@ bool csCommandState::Do()
 
         if (m_cmd == ID_CS_ADD_SHAPE_SELECT)
         {
-            m_shapeOnCanvas->Select(true, &dc);
+            m_shapeOnCanvas->Select(true);
             ((csDiagramView*) m_doc->GetFirstView())->SelectShape(m_shapeOnCanvas, true);
         }
 
@@ -297,7 +297,7 @@ bool csCommandState::Do()
 
         lineShape->Show(true);
 
-        wxClientDC dc(lineShape->GetCanvas());
+        wxInfoDC dc(lineShape->GetCanvas());
         lineShape->GetCanvas()->PrepareDC(dc);
 
         // It won't get drawn properly unless you move both
@@ -307,7 +307,7 @@ bool csCommandState::Do()
 
         if (m_cmd == ID_CS_ADD_LINE_SELECT)
         {
-            lineShape->Select(true, &dc);
+            lineShape->Select(true);
             ((csDiagramView*) m_doc->GetFirstView())->SelectShape(m_shapeOnCanvas, true);
         }
 
@@ -343,12 +343,12 @@ bool csCommandState::Do()
         wxASSERT( (m_savedState != NULL) ); // This is the new shape with changed colour
         wxASSERT( (m_doc != NULL) );
 
-        wxClientDC dc(m_shapeOnCanvas->GetCanvas());
+        wxInfoDC dc(m_shapeOnCanvas->GetCanvas());
         m_shapeOnCanvas->GetCanvas()->PrepareDC(dc);
 
         bool isSelected = m_shapeOnCanvas->Selected();
         if (isSelected)
-            m_shapeOnCanvas->Select(false, & dc);
+            m_shapeOnCanvas->Select(false);
 
         if (m_cmd == ID_CS_SIZE || m_cmd == ID_CS_ROTATE_CLOCKWISE || m_cmd == ID_CS_ROTATE_ANTICLOCKWISE ||
             m_cmd == ID_CS_CHANGE_LINE_ORDERING || m_cmd == ID_CS_CHANGE_LINE_ATTACHMENT)
@@ -378,7 +378,6 @@ bool csCommandState::Do()
 
             csEvtHandler *handler = (csEvtHandler *)m_shapeOnCanvas->GetEventHandler();
             m_shapeOnCanvas->FormatText(dc, handler->m_label);
-            m_shapeOnCanvas->Draw(dc);
         }
         else if (m_cmd == ID_CS_CHANGE_LINE_ORDERING)
         {
@@ -403,25 +402,18 @@ bool csCommandState::Do()
 
             m_shapeOnCanvas->Show(true);
 
-            // Recursively redraw links if we have a composite.
-            if (m_shapeOnCanvas->GetChildren().GetCount() > 0)
-                m_shapeOnCanvas->DrawLinks(dc, -1, true);
-
             m_shapeOnCanvas->GetEventHandler()->OnEndSize(width, height);
         }
         else if (m_cmd == ID_CS_EDIT_PROPERTIES || m_cmd == ID_CS_FONT_CHANGE)
         {
             csEvtHandler *handler = (csEvtHandler *)m_shapeOnCanvas->GetEventHandler();
             m_shapeOnCanvas->FormatText(dc, handler->m_label);
-            m_shapeOnCanvas->Draw(dc);
-        }
-        else
-        {
-            m_shapeOnCanvas->Draw(dc);
         }
 
         if (isSelected)
-            m_shapeOnCanvas->Select(true, & dc);
+            m_shapeOnCanvas->Select(true);
+
+        m_shapeOnCanvas->Redraw();
 
         m_doc->Modify(true);
         m_doc->UpdateAllViews();
@@ -454,7 +446,7 @@ bool csCommandState::Undo()
 
             wxShapeCanvas* canvas = lineShape->GetFrom()->GetCanvas();
 
-            wxClientDC dc(canvas);
+            wxInfoDC dc(canvas);
             canvas->PrepareDC(dc);
 
             lineShape->GetFrom()->MoveLinks(dc);
@@ -491,10 +483,7 @@ bool csCommandState::Undo()
             attachmentTo = lineShape->GetAttachmentTo();
         }
 
-        wxClientDC dc(m_shapeOnCanvas->GetCanvas());
-        m_shapeOnCanvas->GetCanvas()->PrepareDC(dc);
-
-        m_shapeOnCanvas->Select(false, &dc);
+        m_shapeOnCanvas->Select(false);
         ((csDiagramView*) m_doc->GetFirstView())->SelectShape(m_shapeOnCanvas, false);
         m_doc->GetDiagram()->RemoveShape(m_shapeOnCanvas);
         m_shapeOnCanvas->Unlink(); // Unlinks the line, if it is a line

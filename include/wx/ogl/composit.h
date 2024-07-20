@@ -31,8 +31,8 @@ public:
 
   void OnDraw(wxDC& dc);
   void OnDrawContents(wxDC& dc);
-  void OnErase(wxDC& dc);
-  bool OnMovePre(wxDC& dc, double x, double y, double oldX, double oldY, bool display = true);
+  void OnErase(wxReadOnlyDC& dc);
+  bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double oldX, double oldY, bool display = true);
   void OnDragLeft(bool draw, double x, double y, int keys, int attachment = 0);
   void OnBeginDragLeft(double x, double y, int keys, int attachment = 0);
   void OnEndDragLeft(double x, double y, int keys, int attachment = 0);
@@ -123,7 +123,7 @@ class WXDLLIMPEXP_OGL wxDivisionShape: public wxCompositeShape
 
   void OnDraw(wxDC& dc);
   void OnDrawContents(wxDC& dc);
-  bool OnMovePre(wxDC& dc, double x, double y, double oldX, double oldY, bool display = true);
+  bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double oldX, double oldY, bool display = true);
   void OnDragLeft(bool draw, double x, double y, int keys, int attachment = 0);
   void OnBeginDragLeft(double x, double y, int keys, int attachment = 0);
   void OnEndDragLeft(double x, double y, int keys, int attachment = 0);

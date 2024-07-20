@@ -162,7 +162,7 @@ bool wxOGLConstraint::Evaluate()
   x = m_constrainingObject->GetX();
   y = m_constrainingObject->GetY();
 
-  wxClientDC dc(m_constrainingObject->GetCanvas());
+  wxInfoDC dc(m_constrainingObject->GetCanvas());
   m_constrainingObject->GetCanvas()->PrepareDC(dc);
 
   switch (m_constraintType)

@@ -18,10 +18,15 @@
     #define WXDLLIMPEXP_OGL
 #endif
 
-#include <wx/gdicmn.h>
+#include <wx/dcclient.h>
 
 #include <vector>
 
 using wxOGLPoints = std::vector<wxRealPoint>;
+
+#ifndef wxHAS_INFO_DC
+    using wxReadOnlyDC = wxDC;
+    using wxInfoDC = wxClientDC;
+#endif
 
 #endif // _WX_OGL_DEFS_H_

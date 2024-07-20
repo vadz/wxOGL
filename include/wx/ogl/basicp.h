@@ -50,7 +50,7 @@ class WXDLLIMPEXP_OGL wxControlPoint: public wxRectangleShape
   ~wxControlPoint();
 
   void OnDraw(wxDC& dc);
-  void OnErase(wxDC& dc);
+  void OnErase(wxReadOnlyDC& dc);
   void OnDrawContents(wxDC& dc);
   void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0);
   void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0);

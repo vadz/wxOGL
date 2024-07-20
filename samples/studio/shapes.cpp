@@ -79,7 +79,7 @@ void csEvtHandler::CopyData(wxShapeEvtHandler& copy)
 
 void csEvtHandler::OnLeftClick(double WXUNUSED(x), double WXUNUSED(y), int keys, int WXUNUSED(attachment))
 {
-  wxClientDC dc(GetShape()->GetCanvas());
+  wxInfoDC dc(GetShape()->GetCanvas());
   GetShape()->GetCanvas()->PrepareDC(dc);
 
   csDiagramView* view = ((csCanvas*)GetShape()->GetCanvas())->GetView();
@@ -127,8 +127,8 @@ void csEvtHandler::OnLeftClick(double WXUNUSED(x), double WXUNUSED(y), int keys,
 
     selected = !selected;
 
-    GetShape()->Select(selected, &dc);
-    GetShape()->GetCanvas()->Redraw(dc); // Redraw because bits of objects will be missing
+    GetShape()->Select(selected);
+    GetShape()->Redraw();
 
     view->SelectShape(GetShape(), selected);
   }
@@ -136,15 +136,15 @@ void csEvtHandler::OnLeftClick(double WXUNUSED(x), double WXUNUSED(y), int keys,
   {
     if (GetShape()->Selected())
     {
-        GetShape()->Select(false, &dc);
+        GetShape()->Select(false);
         view->SelectShape(GetShape(), false);
     }
     else
     {
-        GetShape()->Select(true, &dc);
+        GetShape()->Select(true);
         view->SelectShape(GetShape(), true);
     }
-    GetShape()->GetCanvas()->Redraw(dc); // Redraw because bits of objects will be missing
+    GetShape()->Redraw();
   }
   else if (keys & KEY_CTRL)
   {
@@ -510,13 +510,8 @@ void csEvtHandler::OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, i
         return;
   }
 
-  wxClientDC dc(canvas);
-  canvas->PrepareDC(dc);
-
   canvas->ReleaseMouse();
-  dc.SetLogicalFunction(wxCOPY);
 
-//  shape->Erase(dc);
 /*
   shape->Recompute();
   shape->ResetControlPoints();
@@ -558,7 +553,7 @@ void csEvtHandler::OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, i
 
 void csEvtHandler::OnEndSize(double WXUNUSED(x), double WXUNUSED(y))
 {
-  wxClientDC dc(GetShape()->GetCanvas());
+  wxInfoDC dc(GetShape()->GetCanvas());
   GetShape()->GetCanvas()->PrepareDC(dc);
 
   GetShape()->FormatText(dc, m_label);

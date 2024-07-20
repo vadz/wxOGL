@@ -98,19 +98,19 @@ class WXDLLIMPEXP_OGL wxLineShape: public wxShape
   // correct position
   // moveControlPoints must be disabled when a control point is being
   // dragged.
-  void OnMoveLink(wxDC& dc, bool moveControlPoints = true);
-  bool OnMovePre(wxDC& dc, double x, double y, double old_x, double old_y, bool display = true);
+  void OnMoveLink(wxReadOnlyDC& dc, bool moveControlPoints = true);
+  bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool display = true);
   void OnDraw(wxDC& dc);
   void OnDrawContents(wxDC& dc);
   void OnDrawControlPoints(wxDC& dc);
-  void OnEraseControlPoints(wxDC& dc);
-  void OnErase(wxDC& dc);
+  void OnEraseControlPoints(wxReadOnlyDC& dc);
+  void OnErase(wxReadOnlyDC& dc);
   virtual bool OnMoveControlPoint(int WXUNUSED(which), double WXUNUSED(x), double WXUNUSED(y)) { return false; }
-  virtual bool OnMoveMiddleControlPoint(wxDC& dc, wxLineControlPoint* lpt, const wxRealPoint& pt);
-  virtual bool OnLabelMovePre(wxDC& dc, wxLabelShape* labelShape, double x, double y, double old_x, double old_y, bool display);
+  virtual bool OnMoveMiddleControlPoint(wxReadOnlyDC& dc, wxLineControlPoint* lpt, const wxRealPoint& pt);
+  virtual bool OnLabelMovePre(wxReadOnlyDC& dc, wxLabelShape* labelShape, double x, double y, double old_x, double old_y, bool display);
   void OnDrawOutline(wxDC& dc, double x, double y, double w, double h);
   void GetBoundingBoxMin(double *w, double *h);
-  void FormatText(wxDC& dc, const wxString& s, int regionId = 0);
+  void FormatText(wxReadOnlyDC& dc, const wxString& s, int regionId = 0);
   virtual void SetEnds(double x1, double y1, double x2, double y2);
   virtual void GetEnds(double *x1, double *y1, double *x2, double *y2);
   inline virtual wxShape *GetFrom() { return m_from; }
@@ -132,7 +132,7 @@ class WXDLLIMPEXP_OGL wxLineShape: public wxShape
   void DrawRegion(wxDC& dc, wxShapeRegion *region, double x, double y);
 
   // Erase one region at this position
-  void EraseRegion(wxDC& dc, wxShapeRegion *region, double x, double y);
+  void EraseRegion(wxReadOnlyDC& dc, wxShapeRegion *region, double x, double y);
 
   // Get the reference point for a label. Region x and y
   // are offsets from this.
@@ -174,7 +174,7 @@ class WXDLLIMPEXP_OGL wxLineShape: public wxShape
   virtual void OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0);
 
   // Override select, to create/delete temporary label-moving objects
-  void Select(bool select = true, wxDC* dc = nullptr);
+  void Select(bool select = true, wxReadOnlyDC* dc = nullptr);
 
   // Set to spline (true) or line (false)
   inline void SetSpline(bool spl) { m_isSpline = spl; }
@@ -263,9 +263,6 @@ private:
   void UpdateMiddleControlPoint(wxLineControlPoint* lpt, const wxRealPoint& pt);
 
 
-  bool              m_erasing;              // flag to say whether we're erasing or drawing
-                                            // this line (really so metafiles can draw a
-                                            // blank rectangle)
   bool              m_ignoreArrowOffsets;   // Don't always want to draw arrowhead offsets
                                             // because they may not work on tool palettes (for example)
   bool              m_isSpline;

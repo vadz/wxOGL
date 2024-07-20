@@ -186,7 +186,7 @@ bool DiagramCommand::Do(void)
       doc->GetDiagram()->AddShape(theShape);
       theShape->Show(true);
 
-      wxClientDC dc(theShape->GetCanvas());
+      wxInfoDC dc(theShape->GetCanvas());
       theShape->GetCanvas()->PrepareDC(dc);
 
       theShape->Move(dc, x, y);
@@ -227,7 +227,7 @@ bool DiagramCommand::Do(void)
 
       theShape->Show(true);
 
-      wxClientDC dc(theShape->GetCanvas());
+      wxInfoDC dc(theShape->GetCanvas());
       theShape->GetCanvas()->PrepareDC(dc);
 
       shape = theShape;
@@ -241,13 +241,10 @@ bool DiagramCommand::Do(void)
     {
       if (shape)
       {
-        wxClientDC dc(shape->GetCanvas());
-        shape->GetCanvas()->PrepareDC(dc);
-
         const wxBrush *oldBrush = shape->GetBrush();
         shape->SetBrush(shapeBrush);
         shapeBrush = oldBrush;
-        shape->Draw(dc);
+        shape->Redraw();
 
         doc->Modify(true);
         doc->UpdateAllViews();
@@ -264,11 +261,11 @@ bool DiagramCommand::Do(void)
         myHandler->label = shapeLabel;
         shapeLabel = oldLabel;
 
-        wxClientDC dc(shape->GetCanvas());
+        wxInfoDC dc(shape->GetCanvas());
         shape->GetCanvas()->PrepareDC(dc);
 
         shape->FormatText(dc, /* (char*) (const char*) */ myHandler->label);
-        shape->Draw(dc);
+        shape->Redraw();
 
         doc->Modify(true);
         doc->UpdateAllViews();
@@ -311,10 +308,7 @@ bool DiagramCommand::Undo(void)
     {
       if (shape)
       {
-        wxClientDC dc(shape->GetCanvas());
-        shape->GetCanvas()->PrepareDC(dc);
-
-        shape->Select(false, &dc);
+        shape->Select(false);
         doc->GetDiagram()->RemoveShape(shape);
         shape->Unlink();
         deleteShape = true;
@@ -327,13 +321,10 @@ bool DiagramCommand::Undo(void)
     {
       if (shape)
       {
-        wxClientDC dc(shape->GetCanvas());
-        shape->GetCanvas()->PrepareDC(dc);
-
         const wxBrush *oldBrush = shape->GetBrush();
         shape->SetBrush(shapeBrush);
         shapeBrush = oldBrush;
-        shape->Draw(dc);
+        shape->Redraw();
 
         doc->Modify(true);
         doc->UpdateAllViews();
@@ -349,11 +340,11 @@ bool DiagramCommand::Undo(void)
         myHandler->label = shapeLabel;
         shapeLabel = oldLabel;
 
-        wxClientDC dc(shape->GetCanvas());
+        wxInfoDC dc(shape->GetCanvas());
         shape->GetCanvas()->PrepareDC(dc);
 
         shape->FormatText(dc, /* (char*) (const char*) */ myHandler->label);
-        shape->Draw(dc);
+        shape->Redraw();
 
         doc->Modify(true);
         doc->UpdateAllViews();
@@ -474,7 +465,7 @@ void MyEvtHandler::OnEndDragRight(double x, double y, int WXUNUSED(keys), int at
 
 void MyEvtHandler::OnEndSize(double WXUNUSED(x), double WXUNUSED(y))
 {
-  wxClientDC dc(GetShape()->GetCanvas());
+  wxInfoDC dc(GetShape()->GetCanvas());
   GetShape()->GetCanvas()->PrepareDC(dc);
 
   GetShape()->FormatText(dc, /* (char*) (const char*) */ label);

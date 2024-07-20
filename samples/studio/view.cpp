@@ -515,9 +515,6 @@ void csDiagramView::OnZoomSel(wxCommandEvent& event)
 // Select or deselect all
 void csDiagramView::SelectAll(bool select)
 {
-    wxClientDC dc(canvas);
-    canvas->PrepareDC(dc);
-
     if (!select)
     {
         wxList selections;
@@ -527,7 +524,7 @@ void csDiagramView::SelectAll(bool select)
         while (node)
         {
             wxShape *theShape = (wxShape*) node->GetData();
-            theShape->Select(false, &dc);
+            theShape->Select(false);
             SelectShape(theShape, false);
 
             node = node->GetNext();
@@ -544,7 +541,7 @@ void csDiagramView::SelectAll(bool select)
                 !eachShape->IsKindOf(CLASSINFO(wxControlPoint)) &&
                 !eachShape->IsKindOf(CLASSINFO(wxLabelShape)))
             {
-                eachShape->Select(true, &dc);
+                eachShape->Select(true);
                 SelectShape(eachShape, true);
             }
             node = node->GetNext();
@@ -862,10 +859,7 @@ void csCanvas::OnLeftClick(double x, double y, int WXUNUSED(keys))
     {
         GetView()->SelectAll(false);
 
-        wxClientDC dc(this);
-        PrepareDC(dc);
-
-        Redraw(dc);
+        Refresh();
         return;
     }
 
@@ -985,9 +979,6 @@ void csCanvas::OnEndDragLeft(double x, double y, int WXUNUSED(keys))
 {
     ReleaseMouse();
 
-    wxClientDC dc(this);
-    PrepareDC(dc);
-
     // Select all images within the rectangle
     float min_x, max_x, min_y, max_y;
     min_x = wxMin(x, sg_initialX);
@@ -1006,7 +997,7 @@ void csCanvas::OnEndDragLeft(double x, double y, int WXUNUSED(keys))
             if (image_x >= min_x && image_x <= max_x &&
                 image_y >= min_y && image_y <= max_y)
             {
-                shape->Select(true, &dc);
+                shape->Select(true);
                 GetView()->SelectShape(shape, true);
             }
         }

@@ -29,3 +29,6 @@ If you have existing code using wxOGL, please note that this version is not
 
 - `wxLineShape::GetLineControlPoints()` returns `std::vector<wxRealPoint>`
   instead of legacy `wxList` container.
+- Many functions previously taking `wxDC&` now take `wxReadOnlyDC&` instead
+  when using wxWidgets 3.3 or later. Please change any overridden functions
+  in your code to take `wxReadOnlyDC` too to fix compilation after this change.

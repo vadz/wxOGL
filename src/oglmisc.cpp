@@ -199,7 +199,7 @@ int FontSizeDialog(wxFrame *parent, int old_size)
 // Centre a list of strings in the given box. xOffset and yOffset are the
 // the positions that these lines should be relative to, and this might be
 // the same as m_xpos, m_ypos, but might be zero if formatting from left-justifying.
-void oglCentreText(wxDC& dc, wxList *text_list,
+void oglCentreText(wxReadOnlyDC& dc, wxList *text_list,
                 double m_xpos, double m_ypos, double width, double height,
                 int formatMode)
 {
@@ -283,7 +283,7 @@ void oglCentreText(wxDC& dc, wxList *text_list,
 }
 
 // Centre a list of strings in the given box
-void oglCentreTextNoClipping(wxDC& dc, wxList *text_list,
+void oglCentreTextNoClipping(wxReadOnlyDC& dc, wxList *text_list,
                               double m_xpos, double m_ypos, double width, double height)
 {
   int n = text_list->GetCount();
@@ -336,7 +336,7 @@ void oglCentreTextNoClipping(wxDC& dc, wxList *text_list,
   }
 }
 
-void oglGetCentredTextExtent(wxDC& dc, wxList *text_list,
+void oglGetCentredTextExtent(wxReadOnlyDC& dc, wxList *text_list,
                               double WXUNUSED(m_xpos), double WXUNUSED(m_ypos), double WXUNUSED(width), double WXUNUSED(height),
                               double *actual_width, double *actual_height)
 {
@@ -372,7 +372,7 @@ void oglGetCentredTextExtent(wxDC& dc, wxList *text_list,
 
 // Format a string to a list of strings that fit in the given box.
 // Interpret %n and 10 or 13 as a new line.
-wxStringList *oglFormatText(wxDC& dc, const wxString& text, double width, double WXUNUSED(height), int formatMode)
+wxStringList *oglFormatText(wxReadOnlyDC& dc, const wxString& text, double width, double WXUNUSED(height), int formatMode)
 {
   // First, parse the string into a list of words
   wxStringList word_list;

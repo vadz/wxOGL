@@ -606,7 +606,7 @@ void wxDividedShapeControlPoint::OnEndDragLeft(double WXUNUSED(x), double y, int
 {
     GetCanvas()->EndDrag();
 
-    wxClientDC dc(GetCanvas());
+    wxInfoDC dc(GetCanvas());
     GetCanvas()->PrepareDC(dc);
 
     wxDividedShape *dividedObject = (wxDividedShape *)m_shape;
@@ -683,7 +683,7 @@ void wxDividedShapeControlPoint::OnEndDragLeft(double WXUNUSED(x), double y, int
         i++;
     }
     dividedObject->SetRegionSizes();
-    dividedObject->Draw(dc);
+    dividedObject->Redraw();
     dividedObject->GetEventHandler()->OnMoveLinks(dc);
 }
 

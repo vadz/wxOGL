@@ -141,7 +141,7 @@ void wxCompositeShape::OnDrawContents(wxDC& dc)
   wxShape::OnDrawContents(dc);
 }
 
-bool wxCompositeShape::OnMovePre(wxDC& dc, double x, double y, double oldx, double oldy, bool display)
+bool wxCompositeShape::OnMovePre(wxReadOnlyDC& dc, double x, double y, double oldx, double oldy, bool display)
 {
   double diffX = x - oldx;
   double diffY = y - oldy;
@@ -158,7 +158,7 @@ bool wxCompositeShape::OnMovePre(wxDC& dc, double x, double y, double oldx, doub
   return true;
 }
 
-void wxCompositeShape::OnErase(wxDC& dc)
+void wxCompositeShape::OnErase(wxReadOnlyDC& dc)
 {
   wxRectangleShape::OnErase(dc);
   auto node = m_children.GetFirst();
@@ -228,7 +228,7 @@ void wxCompositeShape::OnEndDragLeft(double x, double y, int keys, int WXUNUSED(
 {
   GetCanvas()->EndDrag();
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   if (!m_draggable)
@@ -282,7 +282,7 @@ void wxCompositeShape::SetSize(double w, double h, bool recursive)
 
   auto node = m_children.GetFirst();
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   double xBound, yBound;
@@ -621,7 +621,7 @@ void wxCompositeShape::MakeContainer()
 
   division->SetSize(m_width, m_height);
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   division->Move(dc, GetX(), GetY());
@@ -734,7 +734,7 @@ void wxDivisionShape::OnDrawContents(wxDC& dc)
   wxCompositeShape::OnDrawContents(dc);
 }
 
-bool wxDivisionShape::OnMovePre(wxDC& dc, double x, double y, double oldx, double oldy, bool display)
+bool wxDivisionShape::OnMovePre(wxReadOnlyDC& dc, double x, double y, double oldx, double oldy, bool display)
 {
   double diffX = x - oldx;
   double diffY = y - oldy;
@@ -798,16 +798,15 @@ void wxDivisionShape::OnEndDragLeft(double x, double y, int keys, int attachment
     return;
   }
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   m_canvas->Snap(&m_xpos, &m_ypos);
   GetEventHandler()->OnMovePre(dc, x, y, m_oldX, m_oldY);
 
   ResetControlPoints();
-  Draw(dc);
   MoveLinks(dc);
-  GetEventHandler()->OnDrawControlPoints(dc);
+  Redraw();
 }
 
 void wxDivisionShape::SetSize(double w, double h, bool recursive)
@@ -889,7 +888,7 @@ bool wxDivisionShape::Divide(int direction)
   if (Selected())
     Select(false);
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   if (direction == wxVERTICAL)
@@ -990,7 +989,7 @@ bool wxDivisionShape::Divide(int direction)
     compositeParent->MakeControlPoints();
     compositeParent->MakeMandatoryControlPoints();
   }
-  compositeParent->Draw(dc);
+  compositeParent->Redraw();
   return true;
 }
 
@@ -1138,7 +1137,7 @@ bool wxDivisionShape::AdjustLeft(double left, bool test)
   double newX = (double)(left + newW/2.0);
   SetSize(newW, GetHeight());
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   Move(dc, newX, GetY());
@@ -1159,7 +1158,7 @@ bool wxDivisionShape::AdjustTop(double top, bool test)
   double newY = (double)(top + newH/2.0);
   SetSize(GetWidth(), newH);
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   Move(dc, GetX(), newY);
@@ -1180,7 +1179,7 @@ bool wxDivisionShape::AdjustRight(double right, bool test)
   double newX = (double)(x1 + newW/2.0);
   SetSize(newW, GetHeight());
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   Move(dc, newX, GetY());
@@ -1201,7 +1200,7 @@ bool wxDivisionShape::AdjustBottom(double bottom, bool test)
   double newY = (double)(y1 + newH/2.0);
   SetSize(GetWidth(), newH);
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   Move(dc, GetX(), newY);
@@ -1245,7 +1244,7 @@ void wxDivisionControlPoint::OnEndDragLeft(double x, double y, int keys, int att
 {
   wxControlPoint::OnEndDragLeft(x, y, keys, attachment);
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   wxDivisionShape *division = (wxDivisionShape *)m_shape;
@@ -1317,8 +1316,7 @@ void wxDivisionControlPoint::OnEndDragLeft(double x, double y, int keys, int att
     division->SetSize(originalW, originalH);
     division->Move(dc, originalX, originalY);
   }
-  divisionParent->Draw(dc);
-  division->GetEventHandler()->OnDrawControlPoints(dc);
+  divisionParent->Redraw();
 }
 
 /* Resize adjoining divisions.
@@ -1575,7 +1573,7 @@ void wxDivisionShape::PopupMenu(double x, double y)
   int unit_x, unit_y;
   m_canvas->GetScrollPixelsPerUnit(&unit_x, &unit_y);
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   int mouse_x = (int)(dc.LogicalToDeviceX((long)(x - x1*unit_x)));

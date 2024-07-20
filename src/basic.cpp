@@ -93,13 +93,13 @@ void wxShapeEvtHandler::OnDraw(wxDC& dc)
     m_previousHandler->OnDraw(dc);
 }
 
-void wxShapeEvtHandler::OnMoveLinks(wxDC& dc)
+void wxShapeEvtHandler::OnMoveLinks(wxReadOnlyDC& dc)
 {
   if (m_previousHandler)
     m_previousHandler->OnMoveLinks(dc);
 }
 
-void wxShapeEvtHandler::OnMoveLink(wxDC& dc, bool moveControlPoints)
+void wxShapeEvtHandler::OnMoveLink(wxReadOnlyDC& dc, bool moveControlPoints)
 {
   if (m_previousHandler)
     m_previousHandler->OnMoveLink(dc, moveControlPoints);
@@ -123,7 +123,7 @@ void wxShapeEvtHandler::OnSize(double x, double y)
     m_previousHandler->OnSize(x, y);
 }
 
-bool wxShapeEvtHandler::OnMovePre(wxDC& dc, double x, double y, double old_x, double old_y, bool display)
+bool wxShapeEvtHandler::OnMovePre(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool display)
 {
   if (m_previousHandler)
     return m_previousHandler->OnMovePre(dc, x, y, old_x, old_y, display);
@@ -131,22 +131,28 @@ bool wxShapeEvtHandler::OnMovePre(wxDC& dc, double x, double y, double old_x, do
     return true;
 }
 
-void wxShapeEvtHandler::OnMovePost(wxDC& dc, double x, double y, double old_x, double old_y, bool display)
+void wxShapeEvtHandler::OnMovePost(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool display)
 {
   if (m_previousHandler)
     m_previousHandler->OnMovePost(dc, x, y, old_x, old_y, display);
 }
 
-void wxShapeEvtHandler::OnErase(wxDC& dc)
+void wxShapeEvtHandler::OnErase(wxReadOnlyDC& dc)
 {
   if (m_previousHandler)
     m_previousHandler->OnErase(dc);
 }
 
-void wxShapeEvtHandler::OnEraseContents(wxDC& dc)
+void wxShapeEvtHandler::OnEraseContents(wxReadOnlyDC& dc)
 {
   if (m_previousHandler)
     m_previousHandler->OnEraseContents(dc);
+}
+
+void wxShapeEvtHandler::OnEraseBranches(wxReadOnlyDC& dc)
+{
+  if (m_previousHandler)
+    m_previousHandler->OnEraseBranches(dc);
 }
 
 void wxShapeEvtHandler::OnHighlight(wxDC& dc)
@@ -241,7 +247,7 @@ void wxShapeEvtHandler::OnDrawControlPoints(wxDC& dc)
     m_previousHandler->OnDrawControlPoints(dc);
 }
 
-void wxShapeEvtHandler::OnEraseControlPoints(wxDC& dc)
+void wxShapeEvtHandler::OnEraseControlPoints(wxReadOnlyDC& dc)
 {
   if (m_previousHandler)
     m_previousHandler->OnEraseControlPoints(dc);
@@ -324,6 +330,12 @@ wxShape::~wxShape()
   GetEventHandler()->OnDelete();
 }
 
+void wxShape::RefreshRect(double x, double y, double w, double h)
+{
+    if (m_canvas)
+        m_canvas->RefreshRect(wxRect(WXROUND(x), WXROUND(y), WXROUND(w), WXROUND(h)));
+}
+
 void wxShape::SetHighlight(bool hi, bool recurse)
 {
   m_highlighted = hi;
@@ -396,10 +408,8 @@ void wxShape::SetShadowMode(int mode, bool redraw)
 {
   m_shadowMode = mode;
 
-  if (redraw && GetCanvas())
-  {
-    GetCanvas()->Refresh();
-  }
+  if (redraw)
+    Redraw();
 }
 
 void wxShape::SetCanvas(wxShapeCanvas *theCanvas)
@@ -571,7 +581,7 @@ bool wxShape::HitTest(double x, double y, int *attachment, double *distance)
 // strings with positions to region text list
 
 static bool GraphicsInSizeToContents = false; // Infinite recursion elimination
-void wxShape::FormatText(wxDC& dc, const wxString& s, int i)
+void wxShape::FormatText(wxReadOnlyDC& dc, const wxString& s, int i)
 {
   double w, h;
   ClearText(i);
@@ -630,8 +640,7 @@ void wxShape::FormatText(wxDC& dc, const wxString& s, int i)
           composite->MakeControlPoints();
           composite->MakeMandatoryControlPoints();
         }
-        // Where infinite recursion might happen if we didn't stop it
-        composite->Draw(dc);
+        composite->Redraw();
 
         GraphicsInSizeToContents = false;
       }
@@ -878,7 +887,7 @@ void wxShape::OnDraw(wxDC& WXUNUSED(dc))
 {
 }
 
-void wxShape::OnMoveLinks(wxDC& dc)
+void wxShape::OnMoveLinks(wxReadOnlyDC& dc)
 {
   // Want to set the ends of all attached links
   // to point to/from this object
@@ -926,16 +935,16 @@ void wxShape::OnSize(double WXUNUSED(x), double WXUNUSED(y))
 {
 }
 
-bool wxShape::OnMovePre(wxDC& WXUNUSED(dc), double WXUNUSED(x), double WXUNUSED(y), double WXUNUSED(old_x), double WXUNUSED(old_y), bool WXUNUSED(display))
+bool wxShape::OnMovePre(wxReadOnlyDC& WXUNUSED(dc), double WXUNUSED(x), double WXUNUSED(y), double WXUNUSED(old_x), double WXUNUSED(old_y), bool WXUNUSED(display))
 {
   return true;
 }
 
-void wxShape::OnMovePost(wxDC& WXUNUSED(dc), double WXUNUSED(x), double WXUNUSED(y), double WXUNUSED(old_x), double WXUNUSED(old_y), bool WXUNUSED(display))
+void wxShape::OnMovePost(wxReadOnlyDC& WXUNUSED(dc), double WXUNUSED(x), double WXUNUSED(y), double WXUNUSED(old_x), double WXUNUSED(old_y), bool WXUNUSED(display))
 {
 }
 
-void wxShape::OnErase(wxDC& dc)
+void wxShape::OnErase(wxReadOnlyDC& dc)
 {
   if (!m_visible)
     return;
@@ -951,7 +960,7 @@ void wxShape::OnErase(wxDC& dc)
   GetEventHandler()->OnEraseContents(dc);
 }
 
-void wxShape::OnEraseContents(wxDC& dc)
+void wxShape::OnEraseContents(wxReadOnlyDC& WXUNUSED(dc))
 {
   if (!m_visible)
     return;
@@ -968,14 +977,11 @@ void wxShape::OnEraseContents(wxDC& dc)
     if (m_pen)
       penWidth = m_pen->GetWidth();
 
-    dc.SetPen(GetBackgroundPen());
-    dc.SetBrush(GetBackgroundBrush());
-
-    dc.DrawRectangle(WXROUND(topLeftX - penWidth), WXROUND(topLeftY - penWidth),
-                      WXROUND(maxX + penWidth*2.0 + 4.0), WXROUND(maxY + penWidth*2.0 + 4.0));
+    RefreshRect(topLeftX - penWidth, topLeftY - penWidth,
+                maxX + penWidth*2.0 + 4.0, maxY + penWidth*2.0 + 4.0);
 }
 
-void wxShape::EraseLinks(wxDC& dc, int attachment, bool recurse)
+void wxShape::EraseLinks(wxReadOnlyDC& dc, int attachment, bool recurse)
 {
   if (!m_visible)
     return;
@@ -1053,7 +1059,7 @@ bool wxShape::AttachmentSortTest(int attachmentPoint, const wxRealPoint& pt1, co
     return false;
 }
 
-bool wxShape::MoveLineToNewAttachment(wxDC& dc, wxLineShape *to_move,
+bool wxShape::MoveLineToNewAttachment(wxReadOnlyDC& dc, wxLineShape *to_move,
                                        double x, double y)
 {
   if (GetAttachmentMode() == ATTACHMENT_MODE_NONE)
@@ -1148,7 +1154,7 @@ void wxShape::OnChangeAttachment(int attachment, wxLineShape* line, wxList& orde
 
     ApplyAttachmentOrdering(ordering);
 
-    wxClientDC dc(GetCanvas());
+    wxInfoDC dc(GetCanvas());
     GetCanvas()->PrepareDC(dc);
 
     MoveLinks(dc);
@@ -1371,7 +1377,7 @@ void wxShape::OnEndDragLeft(double x, double y, int keys, int attachment)
     return;
   }
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   double xx = x + DragOffsetX;
@@ -1462,7 +1468,18 @@ void wxShape::Detach()
   m_canvas = nullptr;
 }
 
-void wxShape::Move(wxDC& dc, double x, double y, bool display)
+void wxShape::Redraw()
+{
+    if (m_canvas)
+    {
+        double maxX, maxY;
+        GetBoundingBoxMax(&maxX, &maxY);
+
+        RefreshRect(m_xpos, m_ypos, maxX, maxY);
+    }
+}
+
+void wxShape::Move(wxReadOnlyDC& dc, double x, double y, bool display)
 {
   double old_x = m_xpos;
   double old_y = m_ypos;
@@ -1479,14 +1496,14 @@ void wxShape::Move(wxDC& dc, double x, double y, bool display)
   ResetControlPoints();
 
   if (display)
-    GetCanvas()->Refresh();
+      Redraw();
 
   MoveLinks(dc);
 
   GetEventHandler()->OnMovePost(dc, x, y, old_x, old_y, display);
 }
 
-void wxShape::MoveLinks(wxDC& dc)
+void wxShape::MoveLinks(wxReadOnlyDC& dc)
 {
   GetEventHandler()->OnMoveLinks(dc);
 }
@@ -1515,14 +1532,14 @@ void wxShape::Show(bool show)
   }
 }
 
-void wxShape::Erase(wxDC& dc)
+void wxShape::Erase(wxReadOnlyDC& dc)
 {
   GetEventHandler()->OnErase(dc);
   GetEventHandler()->OnEraseControlPoints(dc);
-  GetEventHandler()->OnDrawBranches(dc, true);
+  GetEventHandler()->OnEraseBranches(dc);
 }
 
-void wxShape::EraseContents(wxDC& dc)
+void wxShape::EraseContents(wxReadOnlyDC& dc)
 {
   GetEventHandler()->OnEraseContents(dc);
 }
@@ -1899,7 +1916,7 @@ void wxShape::ResetControlPoints()
   control->m_xoffset = left; control->m_yoffset = 0;
 }
 
-void wxShape::DeleteControlPoints(wxDC *dc)
+void wxShape::DeleteControlPoints(wxReadOnlyDC *dc)
 {
   auto node = m_controlPoints.GetFirst();
   while (node)
@@ -1957,7 +1974,7 @@ void wxShape::OnDrawControlPoints(wxDC& dc)
   }
 }
 
-void wxShape::OnEraseControlPoints(wxDC& dc)
+void wxShape::OnEraseControlPoints(wxReadOnlyDC& dc)
 {
   auto node = m_controlPoints.GetFirst();
   while (node)
@@ -1978,7 +1995,7 @@ void wxShape::OnEraseControlPoints(wxDC& dc)
   }
 }
 
-void wxShape::Select(bool select, wxDC* dc)
+void wxShape::Select(bool select, wxReadOnlyDC* dc)
 {
   m_selected = select;
   if (select)
@@ -1996,8 +2013,6 @@ void wxShape::Select(bool select, wxDC* dc)
         node = node->GetNext();
       }
     }
-    if (dc)
-        GetEventHandler()->OnDrawControlPoints(*dc);
   }
   if (!select)
   {
@@ -2013,6 +2028,8 @@ void wxShape::Select(bool select, wxDC* dc)
       }
     }
   }
+
+  Redraw();
 }
 
 bool wxShape::Selected() const
@@ -2571,6 +2588,52 @@ void wxShape::OnDrawBranches(wxDC& dc, bool erase)
     int i;
     for (i = 0; i < count; i++)
         OnDrawBranches(dc, i, erase);
+}
+
+void wxShape::OnEraseBranches(wxReadOnlyDC& WXUNUSED(dc), int attachment)
+{
+    int count = GetAttachmentLineCount(attachment);
+    if (count == 0)
+        return;
+
+    wxRealPoint root, neck, shoulder1, shoulder2;
+    GetBranchingAttachmentInfo(attachment, root, neck, shoulder1, shoulder2);
+
+    // Erase neck
+    RefreshRect(root.x, root.y, neck.x, neck.y);
+
+    if (count > 1)
+    {
+        // Erase shoulder-to-shoulder line
+        RefreshRect(shoulder1.x, shoulder1.y, shoulder2.x, shoulder2.y);
+    }
+    // Draw all the little branches
+    int i;
+    for (i = 0; i < count; i++)
+    {
+        wxRealPoint pt, stemPt;
+        GetBranchingAttachmentPoint(attachment, i, pt, stemPt);
+        RefreshRect(stemPt.x, stemPt.y, pt.x, pt.y);
+
+        if ((GetBranchStyle() & BRANCHING_ATTACHMENT_BLOB) && (count > 1))
+        {
+            long blobSize=6;
+            RefreshRect(stemPt.x - (blobSize/2.0), stemPt.y - (blobSize/2.0), blobSize, blobSize);
+        }
+    }
+}
+
+void wxShape::OnEraseBranches(wxReadOnlyDC& dc)
+{
+    if (!m_visible)
+        return;
+
+    if (m_attachmentMode != ATTACHMENT_MODE_BRANCHING)
+        return;
+
+    int count = GetNumberOfAttachments();
+    for (int i = 0; i < count; ++i)
+        OnEraseBranches(dc, i);
 }
 
 // Only get the attachment position at the _edge_ of the shape, ignoring

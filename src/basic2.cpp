@@ -1027,7 +1027,7 @@ void wxControlPoint::OnDraw(wxDC& dc)
   wxRectangleShape::OnDraw(dc);
 }
 
-void wxControlPoint::OnErase(wxDC& dc)
+void wxControlPoint::OnErase(wxReadOnlyDC& dc)
 {
   wxRectangleShape::OnErase(dc);
 }
@@ -1308,7 +1308,7 @@ void wxShape::OnSizingEndDragLeft(wxControlPoint* pt, double WXUNUSED(x), double
 {
   GetCanvas()->EndDrag();
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   this->Recompute();
@@ -1327,10 +1327,6 @@ void wxShape::OnSizingEndDragLeft(wxControlPoint* pt, double WXUNUSED(x), double
     theObject->Move(dc, theObject->GetX(), theObject->GetY());
   else
     theObject->Move(dc, pt->sm_controlPointDragPosX, pt->sm_controlPointDragPosY);
-
-  // Recursively redraw links if we have a composite.
-  if (theObject->GetChildren().GetCount() > 0)
-    theObject->DrawLinks(dc, -1, true);
 
   double width, height;
   theObject->GetBoundingBoxMax(&width, &height);
@@ -1488,7 +1484,7 @@ void wxPolygonShape::OnSizingEndDragLeft(wxControlPoint* pt, double WXUNUSED(x),
 
   wxPolygonControlPoint* ppt = (wxPolygonControlPoint*) pt;
 
-  wxClientDC dc(GetCanvas());
+  wxInfoDC dc(GetCanvas());
   GetCanvas()->PrepareDC(dc);
 
   // If we're changing shape, must reset the original points
