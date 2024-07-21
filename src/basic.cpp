@@ -583,6 +583,9 @@ bool wxShape::HitTest(double x, double y, int *attachment, double *distance)
 static bool GraphicsInSizeToContents = false; // Infinite recursion elimination
 void wxShape::FormatText(wxReadOnlyDC& dc, const wxString& s, int i)
 {
+  if (s.empty())
+    return;
+
   double w, h;
   ClearText(i);
 

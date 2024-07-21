@@ -159,6 +159,9 @@ void wxLineShape::Initialise()
 // strings with positions to region text list
 void wxLineShape::FormatText(wxReadOnlyDC& dc, const wxString& s, int i)
 {
+  if (s.empty())
+    return;
+
   double w, h;
   ClearText(i);
 
@@ -2138,12 +2141,7 @@ bool wxLineShape::OnLabelMovePre(wxReadOnlyDC& dc, wxLabelShape* labelShape, dou
   labelShape->SetY(y);
 
   // Need to reformat to fit region.
-  if (!labelShape->m_shapeRegion->GetText().empty())
-  {
-
-    wxString s(labelShape->m_shapeRegion->GetText());
-    labelShape->FormatText(dc, s, i);
-  }
+  labelShape->FormatText(dc, labelShape->m_shapeRegion->GetText(), i);
   return true;
 }
 
