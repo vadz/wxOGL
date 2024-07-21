@@ -20,12 +20,12 @@ class WXDLLIMPEXP_OGL wxBitmapShape: public wxRectangleShape
   wxBitmapShape();
   ~wxBitmapShape();
 
-  void OnDraw(wxDC& dc);
+  void OnDraw(wxDC& dc) override;
 
   // Does the copying for this object
-  void Copy(wxShape& copy);
+  void Copy(wxShape& copy) override;
 
-  void SetSize(double w, double h, bool recursive = true);
+  void SetSize(double w, double h, bool recursive = true) override;
   inline wxBitmap& GetBitmap() const { return (wxBitmap&) m_bitmap; }
   void SetBitmap(const wxBitmap& bm);
   inline void SetFilename(const wxString& f) { m_filename = f; };

@@ -208,40 +208,40 @@ class WXDLLIMPEXP_OGL wxShape: public wxShapeEvtHandler
   // Redraw the shape during the next paint cycle.
   void Redraw();
 
-  virtual void OnDraw(wxDC& dc);
-  virtual void OnDrawContents(wxDC& dc);
-  virtual void OnMoveLinks(wxReadOnlyDC& dc);
+  void OnDraw(wxDC& dc) override;
+  void OnDrawContents(wxDC& dc) override;
+  void OnMoveLinks(wxReadOnlyDC& dc) override;
   virtual void Unlink() { };
   void SetDrawHandles(bool drawH);
   inline bool GetDrawHandles() { return m_drawHandles; }
-  virtual void OnErase(wxReadOnlyDC& dc);
-  virtual void OnEraseContents(wxReadOnlyDC& dc);
-  virtual void OnHighlight(wxDC& dc);
-  virtual void OnLeftClick(double x, double y, int keys = 0, int attachment = 0);
-  virtual void OnLeftDoubleClick(double WXUNUSED(x), double WXUNUSED(y), int WXUNUSED(keys) = 0, int WXUNUSED(attachment) = 0) {}
-  virtual void OnRightClick(double x, double y, int keys = 0, int attachment = 0);
-  virtual void OnSize(double x, double y);
-  virtual bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool display = true);
-  virtual void OnMovePost(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool display = true);
+  void OnErase(wxReadOnlyDC& dc) override;
+  void OnEraseContents(wxReadOnlyDC& dc) override;
+  void OnHighlight(wxDC& dc) override;
+  void OnLeftClick(double x, double y, int keys = 0, int attachment = 0) override;
+  void OnLeftDoubleClick(double WXUNUSED(x), double WXUNUSED(y), int WXUNUSED(keys) = 0, int WXUNUSED(attachment) = 0) override {}
+  void OnRightClick(double x, double y, int keys = 0, int attachment = 0) override;
+  void OnSize(double x, double y) override;
+  bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool display = true) override;
+  void OnMovePost(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool display = true) override;
 
-  virtual void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0); // Erase if draw false
-  virtual void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0);
-  virtual void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0);
-  virtual void OnDragRight(bool draw, double x, double y, int keys=0, int attachment = 0); // Erase if draw false
-  virtual void OnBeginDragRight(double x, double y, int keys=0, int attachment = 0);
-  virtual void OnEndDragRight(double x, double y, int keys=0, int attachment = 0);
-  virtual void OnDrawOutline(wxDC& dc, double x, double y, double w, double h);
-  virtual void OnDrawControlPoints(wxDC& dc);
-  virtual void OnEraseControlPoints(wxReadOnlyDC& dc);
+  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0) override; // Erase if draw false
+  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0) override;
+  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0) override;
+  void OnDragRight(bool draw, double x, double y, int keys=0, int attachment = 0) override; // Erase if draw false
+  void OnBeginDragRight(double x, double y, int keys=0, int attachment = 0) override;
+  void OnEndDragRight(double x, double y, int keys=0, int attachment = 0) override;
+  void OnDrawOutline(wxDC& dc, double x, double y, double w, double h) override;
+  void OnDrawControlPoints(wxDC& dc) override;
+  void OnEraseControlPoints(wxReadOnlyDC& dc) override;
 
-  virtual void OnBeginSize(double WXUNUSED(w), double WXUNUSED(h)) { }
-  virtual void OnEndSize(double WXUNUSED(w), double WXUNUSED(h)) { }
+  void OnBeginSize(double WXUNUSED(w), double WXUNUSED(h)) override { }
+  void OnEndSize(double WXUNUSED(w), double WXUNUSED(h)) override { }
 
   // Control points ('handles') redirect control to the actual shape, to make it easier
   // to override sizing behaviour.
-  virtual void OnSizingDragLeft(wxControlPoint* pt, bool draw, double x, double y, int keys=0, int attachment = 0); // Erase if draw false
-  virtual void OnSizingBeginDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0);
-  virtual void OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0);
+  void OnSizingDragLeft(wxControlPoint* pt, bool draw, double x, double y, int keys=0, int attachment = 0) override; // Erase if draw false
+  void OnSizingBeginDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0) override;
+  void OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0) override;
 
   virtual void MakeControlPoints();
   virtual void DeleteControlPoints(wxReadOnlyDC *dc = nullptr);
@@ -409,7 +409,7 @@ class WXDLLIMPEXP_OGL wxShape: public wxShapeEvtHandler
   void ApplyAttachmentOrdering(wxList& ordering);
 
   // Can override this to prevent or intercept line reordering.
-  virtual void OnChangeAttachment(int attachment, wxLineShape* line, wxList& ordering);
+  void OnChangeAttachment(int attachment, wxLineShape* line, wxList& ordering) override;
 
   //// New banching attachment code, 24/9/98
 
@@ -440,10 +440,10 @@ class WXDLLIMPEXP_OGL wxShape: public wxShapeEvtHandler
 
   // Draw the branches (not the actual arcs though)
   virtual void OnDrawBranches(wxDC& dc, int attachment, bool erase = false);
-  virtual void OnDrawBranches(wxDC& dc, bool erase = false);
+  void OnDrawBranches(wxDC& dc, bool erase = false) override;
 
   virtual void OnEraseBranches(wxReadOnlyDC& dc, int attachment);
-  virtual void OnEraseBranches(wxReadOnlyDC& dc);
+  void OnEraseBranches(wxReadOnlyDC& dc) override;
 
   // Branching attachment settings
   inline void SetBranchNeckLength(int len) { m_branchNeckLength = len; }
@@ -566,27 +566,27 @@ class WXDLLIMPEXP_OGL wxPolygonShape: public wxShape
   virtual void Create(wxList *points);
   virtual void ClearPoints();
 
-  void GetBoundingBoxMin(double *w, double *h);
+  void GetBoundingBoxMin(double *w, double *h) override;
   void CalculateBoundingBox();
   bool GetPerimeterPoint(double x1, double y1,
-                                 double x2, double y2,
-                                 double *x3, double *y3);
-  bool HitTest(double x, double y, int *attachment, double *distance);
-  void SetSize(double x, double y, bool recursive = true);
-  void OnDraw(wxDC& dc);
-  void OnDrawOutline(wxDC& dc, double x, double y, double w, double h);
+                         double x2, double y2,
+                         double *x3, double *y3) override;
+  bool HitTest(double x, double y, int *attachment, double *distance) override;
+  void SetSize(double x, double y, bool recursive = true) override;
+  void OnDraw(wxDC& dc) override;
+  void OnDrawOutline(wxDC& dc, double x, double y, double w, double h) override;
 
   // Control points ('handles') redirect control to the actual shape, to make it easier
   // to override sizing behaviour.
-  virtual void OnSizingDragLeft(wxControlPoint* pt, bool draw, double x, double y, int keys=0, int attachment = 0);
-  virtual void OnSizingBeginDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0);
-  virtual void OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0);
+  void OnSizingDragLeft(wxControlPoint* pt, bool draw, double x, double y, int keys=0, int attachment = 0) override;
+  void OnSizingBeginDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0) override;
+  void OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0) override;
 
   // A polygon should have a control point at each vertex,
   // with the option of moving the control points individually
   // to change the shape.
-  void MakeControlPoints();
-  void ResetControlPoints();
+  void MakeControlPoints() override;
+  void ResetControlPoints() override;
 
   // If we've changed the shape, must make the original
   // points match the working points
@@ -601,18 +601,18 @@ class WXDLLIMPEXP_OGL wxPolygonShape: public wxShape
   // Recalculates the centre of the polygon
   virtual void CalculatePolygonCentre();
 
-  int GetNumberOfAttachments() const;
+  int GetNumberOfAttachments() const override;
   bool GetAttachmentPosition(int attachment, double *x, double *y,
-                                     int nth = 0, int no_arcs = 1, wxLineShape *line = nullptr);
-  bool AttachmentIsValid(int attachment) const;
+                             int nth = 0, int no_arcs = 1, wxLineShape *line = nullptr) override;
+  bool AttachmentIsValid(int attachment) const override;
   // Does the copying for this object
-  void Copy(wxShape& copy);
+  void Copy(wxShape& copy) override;
 
   inline wxList *GetPoints() { return m_points; }
   inline wxList *GetOriginalPoints() { return m_originalPoints; }
 
   // Rotate about the given axis by the given amount in radians
-  virtual void Rotate(double x, double y, double theta);
+  void Rotate(double x, double y, double theta) override;
 
   double GetOriginalWidth() const { return m_originalWidth; }
   double GetOriginalHeight() const { return m_originalHeight; }
@@ -634,20 +634,20 @@ class WXDLLIMPEXP_OGL wxRectangleShape: public wxShape
  DECLARE_DYNAMIC_CLASS(wxRectangleShape)
  public:
   wxRectangleShape(double w = 0.0, double h = 0.0);
-  void GetBoundingBoxMin(double *w, double *h);
+  void GetBoundingBoxMin(double *w, double *h) override;
   bool GetPerimeterPoint(double x1, double y1,
-                                 double x2, double y2,
-                                 double *x3, double *y3);
-  void OnDraw(wxDC& dc);
-  void SetSize(double x, double y, bool recursive = true);
+                         double x2, double y2,
+                         double *x3, double *y3) override;
+  void OnDraw(wxDC& dc) override;
+  void SetSize(double x, double y, bool recursive = true) override;
   void SetCornerRadius(double rad); // If > 0, rounded corners
   double GetCornerRadius() const { return m_cornerRadius; }
 
-  int GetNumberOfAttachments() const;
+  int GetNumberOfAttachments() const override;
   bool GetAttachmentPosition(int attachment, double *x, double *y,
-                                     int nth = 0, int no_arcs = 1, wxLineShape *line = nullptr);
+                             int nth = 0, int no_arcs = 1, wxLineShape *line = nullptr) override;
   // Does the copying for this object
-  void Copy(wxShape& copy);
+  void Copy(wxShape& copy) override;
 
   inline double GetWidth() const { return m_width; }
   inline double GetHeight() const { return m_height; }
@@ -666,10 +666,10 @@ class WXDLLIMPEXP_OGL wxTextShape: public wxRectangleShape
  public:
   wxTextShape(double width = 0.0, double height = 0.0);
 
-  void OnDraw(wxDC& dc);
+  void OnDraw(wxDC& dc) override;
 
   // Does the copying for this object
-  void Copy(wxShape& copy);
+  void Copy(wxShape& copy) override;
 };
 
 class WXDLLIMPEXP_OGL wxEllipseShape: public wxShape
@@ -678,20 +678,20 @@ class WXDLLIMPEXP_OGL wxEllipseShape: public wxShape
  public:
   wxEllipseShape(double w = 0.0, double h = 0.0);
 
-  void GetBoundingBoxMin(double *w, double *h);
+  void GetBoundingBoxMin(double *w, double *h) override;
   bool GetPerimeterPoint(double x1, double y1,
-                                 double x2, double y2,
-                                 double *x3, double *y3);
+                         double x2, double y2,
+                         double *x3, double *y3) override;
 
-  void OnDraw(wxDC& dc);
-  void SetSize(double x, double y, bool recursive = true);
+  void OnDraw(wxDC& dc) override;
+  void SetSize(double x, double y, bool recursive = true) override;
 
-  int GetNumberOfAttachments() const;
+  int GetNumberOfAttachments() const override;
   bool GetAttachmentPosition(int attachment, double *x, double *y,
-                                     int nth = 0, int no_arcs = 1, wxLineShape *line = nullptr);
+                             int nth = 0, int no_arcs = 1, wxLineShape *line = nullptr) override;
 
   // Does the copying for this object
-  void Copy(wxShape& copy);
+  void Copy(wxShape& copy) override;
 
   inline double GetWidth() const { return m_width; }
   inline double GetHeight() const { return m_height; }
@@ -711,10 +711,10 @@ class WXDLLIMPEXP_OGL wxCircleShape: public wxEllipseShape
   wxCircleShape(double w = 0.0);
 
   bool GetPerimeterPoint(double x1, double y1,
-                                 double x2, double y2,
-                                 double *x3, double *y3);
+                         double x2, double y2,
+                         double *x3, double *y3) override;
   // Does the copying for this object
-  void Copy(wxShape& copy);
+  void Copy(wxShape& copy) override;
 };
 
 #endif

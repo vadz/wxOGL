@@ -34,9 +34,9 @@ class wxDividedShapeControlPoint: public wxControlPoint
                             double size, double the_xoffset, double the_yoffset, int the_type);
   ~wxDividedShapeControlPoint();
 
-  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0);
-  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0);
-  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0);
+  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0) override;
+  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0) override;
+  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0) override;
 };
 
 IMPLEMENT_DYNAMIC_CLASS(wxDividedShapeControlPoint, wxControlPoint)

@@ -49,16 +49,16 @@ class WXDLLIMPEXP_OGL wxControlPoint: public wxRectangleShape
     double the_yoffset = 0.0, int the_type = 0);
   ~wxControlPoint();
 
-  void OnDraw(wxDC& dc);
-  void OnErase(wxReadOnlyDC& dc);
-  void OnDrawContents(wxDC& dc);
-  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0);
-  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0);
-  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0);
+  void OnDraw(wxDC& dc) override;
+  void OnErase(wxReadOnlyDC& dc) override;
+  void OnDrawContents(wxDC& dc) override;
+  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0) override;
+  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0) override;
+  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0) override;
 
   bool GetAttachmentPosition(int attachment, double *x, double *y,
-                                     int nth = 0, int no_arcs = 1, wxLineShape *line = nullptr);
-  int GetNumberOfAttachments() const;
+                             int nth = 0, int no_arcs = 1, wxLineShape *line = nullptr) override;
+  int GetNumberOfAttachments() const override;
 
   inline void SetEraseObject(bool er) { m_eraseObject = er; }
 
@@ -94,9 +94,9 @@ class WXDLLIMPEXP_OGL wxPolygonControlPoint: public wxControlPoint
     double the_xoffset = 0.0, double the_yoffset = 0.0);
   ~wxPolygonControlPoint();
 
-  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0);
-  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0);
-  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0);
+  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0) override;
+  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0) override;
+  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0) override;
 
   // Calculate what new size would be, at end of resize
   virtual void CalculateNewSize(double x, double y);

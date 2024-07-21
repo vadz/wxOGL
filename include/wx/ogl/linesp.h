@@ -24,10 +24,10 @@ class WXDLLIMPEXP_OGL wxLineControlPoint: public wxControlPoint
      double x = 0.0, double y = 0.0, int the_type = 0);
   ~wxLineControlPoint();
 
-  void OnDraw(wxDC& dc);
-  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0);
-  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0);
-  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0);
+  void OnDraw(wxDC& dc) override;
+  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0) override;
+  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0) override;
+  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0) override;
 
   // Obsolete (left-dragging now moves attachment point to new relative position OR new
   // attachment id)
@@ -57,14 +57,14 @@ class WXDLLIMPEXP_OGL wxLabelShape: public wxRectangleShape
   wxLabelShape(wxLineShape *parent = nullptr, wxShapeRegion *region = nullptr, double w = 0.0, double h = 0.0);
   ~wxLabelShape();
 
-  void OnDraw(wxDC& dc);
-  void OnDrawContents(wxDC& dc);
-  void OnLeftClick(double x, double y, int keys = 0, int attachment = 0);
-  void OnRightClick(double x, double y, int keys = 0, int attachment = 0);
-  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0);
-  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0);
-  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0);
-  bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool display = true);
+  void OnDraw(wxDC& dc) override;
+  void OnDrawContents(wxDC& dc) override;
+  void OnLeftClick(double x, double y, int keys = 0, int attachment = 0) override;
+  void OnRightClick(double x, double y, int keys = 0, int attachment = 0) override;
+  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0) override;
+  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0) override;
+  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0) override;
+  bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool display = true) override;
 
 public:
   wxLineShape*      m_lineShape;

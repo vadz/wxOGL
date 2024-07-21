@@ -32,18 +32,18 @@ class WXDLLIMPEXP_OGL wxDividedShape: public wxRectangleShape
   wxDividedShape(double w = 0.0, double h = 0.0);
   ~wxDividedShape();
 
-  void OnDraw(wxDC& dc);
-  void OnDrawContents(wxDC& dc);
+  void OnDraw(wxDC& dc) override;
+  void OnDrawContents(wxDC& dc) override;
 
-  void SetSize(double w, double h, bool recursive = true);
+  void SetSize(double w, double h, bool recursive = true) override;
 
-  void MakeControlPoints();
-  void ResetControlPoints();
+  void MakeControlPoints() override;
+  void ResetControlPoints() override;
 
-  void MakeMandatoryControlPoints();
-  void ResetMandatoryControlPoints();
+  void MakeMandatoryControlPoints() override;
+  void ResetMandatoryControlPoints() override;
 
-  void Copy(wxShape &copy);
+  void Copy(wxShape &copy) override;
 
   // Set all region sizes according to proportions and
   // this object total size
@@ -54,12 +54,12 @@ class WXDLLIMPEXP_OGL wxDividedShape: public wxRectangleShape
 
   // Attachment points correspond to regions in the divided box
   bool GetAttachmentPosition(int attachment, double *x, double *y,
-                                     int nth = 0, int no_arcs = 1, wxLineShape *line = nullptr);
-  bool AttachmentIsValid(int attachment) const;
-  int GetNumberOfAttachments() const;
+                             int nth = 0, int no_arcs = 1, wxLineShape *line = nullptr) override;
+  bool AttachmentIsValid(int attachment) const override;
+  int GetNumberOfAttachments() const override;
 
   // Invoke editor on CTRL-right click
-  void OnRightClick(double x, double y, int keys = 0, int attachment = 0);
+  void OnRightClick(double x, double y, int keys = 0, int attachment = 0) override;
 };
 
 #endif

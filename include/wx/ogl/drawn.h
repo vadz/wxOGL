@@ -126,32 +126,32 @@ class WXDLLIMPEXP_OGL wxDrawnShape: public wxRectangleShape
   wxDrawnShape();
   ~wxDrawnShape();
 
-  void OnDraw(wxDC& dc);
+  void OnDraw(wxDC& dc) override;
 
   // Does the copying for this object
-  void Copy(wxShape& copy);
+  void Copy(wxShape& copy) override;
 
   void Scale(double sx, double sy);
   void Translate(double x, double y);
   // Rotate about the given axis by theta radians from the x axis.
-  void Rotate(double x, double y, double theta);
+  void Rotate(double x, double y, double theta) override;
 
   // Get current rotation
-  inline double GetRotation() const { return m_rotation; }
+  double GetRotation() const override { return m_rotation; }
 
-  void SetSize(double w, double h, bool recursive = true);
+  void SetSize(double w, double h, bool recursive = true) override;
   bool LoadFromMetaFile(const wxString& filename);
 
   inline void SetSaveToFile(bool save) { m_saveToFile = save; }
   inline wxPseudoMetaFile& GetMetaFile(int which = 0) const { return (wxPseudoMetaFile&) m_metafiles[which]; }
 
-  void OnDrawOutline(wxDC& dc, double x, double y, double w, double h);
+  void OnDrawOutline(wxDC& dc, double x, double y, double w, double h) override;
 
   // Get the perimeter point using the special outline op, if there is one,
   // otherwise use default wxRectangleShape scheme
   bool GetPerimeterPoint(double x1, double y1,
-                                     double x2, double y2,
-                                     double *x3, double *y3);
+                         double x2, double y2,
+                         double *x3, double *y3) override;
 
   /// Set of functions for drawing into a pseudo metafile.
   /// They use integers, but doubles are used internally for accuracy
@@ -181,7 +181,7 @@ class WXDLLIMPEXP_OGL wxDrawnShape: public wxRectangleShape
 
   // Set the width/height according to the shapes in the metafile.
   // Call this after drawing into the shape.
-  inline void CalculateSize() { m_metafiles[m_currentAngle].CalculateSize(this); }
+  void CalculateSize() override { m_metafiles[m_currentAngle].CalculateSize(this); }
 
   inline void DrawAtAngle(int angle) { m_currentAngle = angle; };
 

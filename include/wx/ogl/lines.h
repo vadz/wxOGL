@@ -98,19 +98,19 @@ class WXDLLIMPEXP_OGL wxLineShape: public wxShape
   // correct position
   // moveControlPoints must be disabled when a control point is being
   // dragged.
-  void OnMoveLink(wxReadOnlyDC& dc, bool moveControlPoints = true);
-  bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool display = true);
-  void OnDraw(wxDC& dc);
-  void OnDrawContents(wxDC& dc);
-  void OnDrawControlPoints(wxDC& dc);
-  void OnEraseControlPoints(wxReadOnlyDC& dc);
-  void OnErase(wxReadOnlyDC& dc);
+  void OnMoveLink(wxReadOnlyDC& dc, bool moveControlPoints = true) override;
+  bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double old_x, double old_y, bool display = true) override;
+  void OnDraw(wxDC& dc) override;
+  void OnDrawContents(wxDC& dc) override;
+  void OnDrawControlPoints(wxDC& dc) override;
+  void OnEraseControlPoints(wxReadOnlyDC& dc) override;
+  void OnErase(wxReadOnlyDC& dc) override;
   virtual bool OnMoveControlPoint(int WXUNUSED(which), double WXUNUSED(x), double WXUNUSED(y)) { return false; }
   virtual bool OnMoveMiddleControlPoint(wxReadOnlyDC& dc, wxLineControlPoint* lpt, const wxRealPoint& pt);
   virtual bool OnLabelMovePre(wxReadOnlyDC& dc, wxLabelShape* labelShape, double x, double y, double old_x, double old_y, bool display);
-  void OnDrawOutline(wxDC& dc, double x, double y, double w, double h);
-  void GetBoundingBoxMin(double *w, double *h);
-  void FormatText(wxReadOnlyDC& dc, const wxString& s, int regionId = 0);
+  void OnDrawOutline(wxDC& dc, double x, double y, double w, double h) override;
+  void GetBoundingBoxMin(double *w, double *h) override;
+  void FormatText(wxReadOnlyDC& dc, const wxString& s, int regionId = 0) override;
   virtual void SetEnds(double x1, double y1, double x2, double y2);
   virtual void GetEnds(double *x1, double *y1, double *x2, double *y2);
   inline virtual wxShape *GetFrom() { return m_from; }
@@ -150,8 +150,8 @@ class WXDLLIMPEXP_OGL wxLineShape: public wxShape
   inline bool GetMaintainStraightLines() const { return m_maintainStraightLines; }
 
   // Make handle control points
-  void MakeControlPoints();
-  void ResetControlPoints();
+  void MakeControlPoints() override;
+  void ResetControlPoints() override;
 
   // Make a given number of control points
   virtual void MakeLineControlPoints(int n);
@@ -163,29 +163,29 @@ class WXDLLIMPEXP_OGL wxLineShape: public wxShape
   const wxOGLPoints& GetLineControlPoints() const { return m_lineControlPoints; }
 
   // Override dragging behaviour - don't want to be able to drag lines!
-  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0);
-  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0);
-  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0);
+  void OnDragLeft(bool draw, double x, double y, int keys=0, int attachment = 0) override;
+  void OnBeginDragLeft(double x, double y, int keys=0, int attachment = 0) override;
+  void OnEndDragLeft(double x, double y, int keys=0, int attachment = 0) override;
 
   // Control points ('handles') redirect control to the actual shape, to make it easier
   // to override sizing behaviour.
-  virtual void OnSizingDragLeft(wxControlPoint* pt, bool draw, double x, double y, int keys=0, int attachment = 0);
-  virtual void OnSizingBeginDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0);
-  virtual void OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0);
+  void OnSizingDragLeft(wxControlPoint* pt, bool draw, double x, double y, int keys=0, int attachment = 0) override;
+  void OnSizingBeginDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0) override;
+  void OnSizingEndDragLeft(wxControlPoint* pt, double x, double y, int keys=0, int attachment = 0) override;
 
   // Override select, to create/delete temporary label-moving objects
-  void Select(bool select = true, wxReadOnlyDC* dc = nullptr);
+  void Select(bool select = true, wxReadOnlyDC* dc = nullptr) override;
 
   // Set to spline (true) or line (false)
   inline void SetSpline(bool spl) { m_isSpline = spl; }
   inline bool IsSpline() const { return m_isSpline; }
 
-  void Unlink();
+  void Unlink() override;
   void SetAttachments(int from_attach, int to_attach);
   inline void SetAttachmentFrom(int attach) { m_attachmentFrom = attach; }
   inline void SetAttachmentTo(int attach) { m_attachmentTo = attach; }
 
-  bool HitTest(double x, double y, int *attachment, double *distance);
+  bool HitTest(double x, double y, int *attachment, double *distance) override;
 
   virtual void FindNth(wxShape *image, int *nth, int *no_arcs, bool incoming);
 
@@ -196,10 +196,10 @@ class WXDLLIMPEXP_OGL wxLineShape: public wxShape
   // This is really to distinguish between lines and other images.
   // For lines, want to pass drag to canvas, since lines tend to prevent
   // dragging on a canvas (they get in the way.)
-  virtual bool Draggable() const { return false; }
+  bool Draggable() const override { return false; }
 
   // Does the copying for this object
-  void Copy(wxShape& copy);
+  void Copy(wxShape& copy) override;
 
   // Add an arrowhead.
   wxArrowHead *AddArrow(WXTYPE type, int end = ARROW_POSITION_END,

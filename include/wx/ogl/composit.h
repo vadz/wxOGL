@@ -29,20 +29,20 @@ public:
   wxCompositeShape();
   ~wxCompositeShape();
 
-  void OnDraw(wxDC& dc);
-  void OnDrawContents(wxDC& dc);
-  void OnErase(wxReadOnlyDC& dc);
-  bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double oldX, double oldY, bool display = true);
-  void OnDragLeft(bool draw, double x, double y, int keys, int attachment = 0);
-  void OnBeginDragLeft(double x, double y, int keys, int attachment = 0);
-  void OnEndDragLeft(double x, double y, int keys, int attachment = 0);
+  void OnDraw(wxDC& dc) override;
+  void OnDrawContents(wxDC& dc) override;
+  void OnErase(wxReadOnlyDC& dc) override;
+  bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double oldX, double oldY, bool display = true) override;
+  void OnDragLeft(bool draw, double x, double y, int keys, int attachment = 0) override;
+  void OnBeginDragLeft(double x, double y, int keys, int attachment = 0) override;
+  void OnEndDragLeft(double x, double y, int keys, int attachment = 0) override;
 
-  void OnRightClick(double x, double y, int keys, int attachment = 0);
+  void OnRightClick(double x, double y, int keys, int attachment = 0) override;
 
-  void SetSize(double w, double h, bool recursive = true);
+  void SetSize(double w, double h, bool recursive = true) override;
 
   // Returns true if it settled down
-  bool Recompute();
+  bool Recompute() override;
 
   // New members
   void AddChild(wxShape *child, wxShape *addAfter = nullptr);
@@ -66,16 +66,16 @@ public:
   wxOGLConstraint *FindConstraint(long id, wxCompositeShape **actualComposite = nullptr);
 
   // Returns true if something changed
-  bool Constrain();
+  bool Constrain() override;
 
   // Make this composite into a container by creating one wxDivisionShape
   void MakeContainer();
 
   // Calculates size and position of composite object based on children
-  void CalculateSize();
+  void CalculateSize() override;
 
   // Does the copying for this object
-  void Copy(wxShape& copy);
+  void Copy(wxShape& copy) override;
 
   virtual wxDivisionShape *OnCreateDivision();
 
@@ -121,30 +121,30 @@ class WXDLLIMPEXP_OGL wxDivisionShape: public wxCompositeShape
   wxDivisionShape();
   ~wxDivisionShape();
 
-  void OnDraw(wxDC& dc);
-  void OnDrawContents(wxDC& dc);
-  bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double oldX, double oldY, bool display = true);
-  void OnDragLeft(bool draw, double x, double y, int keys, int attachment = 0);
-  void OnBeginDragLeft(double x, double y, int keys, int attachment = 0);
-  void OnEndDragLeft(double x, double y, int keys, int attachment = 0);
+  void OnDraw(wxDC& dc) override;
+  void OnDrawContents(wxDC& dc) override;
+  bool OnMovePre(wxReadOnlyDC& dc, double x, double y, double oldX, double oldY, bool display = true) override;
+  void OnDragLeft(bool draw, double x, double y, int keys, int attachment = 0) override;
+  void OnBeginDragLeft(double x, double y, int keys, int attachment = 0) override;
+  void OnEndDragLeft(double x, double y, int keys, int attachment = 0) override;
 
-  void OnRightClick(double x, double y, int keys = 0, int attachment = 0);
+  void OnRightClick(double x, double y, int keys = 0, int attachment = 0) override;
 
   // Don't want this kind of composite to resize its subdiagrams, so
   // override composite's SetSize.
-  void SetSize(double w, double h, bool recursive = true);
+  void SetSize(double w, double h, bool recursive = true) override;
 
   // Similarly for calculating size: it's fixed at whatever SetSize
   // set it to, not in terms of children.
-  void CalculateSize();
+  void CalculateSize() override;
 
-  void MakeControlPoints();
-  void ResetControlPoints();
-  void MakeMandatoryControlPoints();
-  void ResetMandatoryControlPoints();
+  void MakeControlPoints() override;
+  void ResetControlPoints() override;
+  void MakeMandatoryControlPoints() override;
+  void ResetMandatoryControlPoints() override;
 
   // Does the copying for this object
-  void Copy(wxShape& copy);
+  void Copy(wxShape& copy) override;
 
   // Divide horizontally (wxHORIZONTAL) or vertically (wxVERTICAL)
   bool Divide(int direction);

@@ -88,8 +88,8 @@ class WXDLLIMPEXP_OGL wxOpSetGDI: public wxDrawOp
 {
  public:
   wxOpSetGDI(int theOp, wxPseudoMetaFile *theImage, int theGdiIndex, int theMode = 0);
-  void Do(wxDC& dc, double xoffset, double yoffset);
-  wxDrawOp *Copy(wxPseudoMetaFile *newImage);
+  void Do(wxDC& dc, double xoffset, double yoffset) override;
+  wxDrawOp *Copy(wxPseudoMetaFile *newImage) override;
 
 public:
   int               m_mode;
@@ -109,10 +109,10 @@ class WXDLLIMPEXP_OGL wxOpSetClipping: public wxDrawOp
 {
 public:
   wxOpSetClipping(int theOp, double theX1, double theY1, double theX2, double theY2);
-  void Do(wxDC& dc, double xoffset, double yoffset);
-  void Scale(double xScale, double yScale);
-  void Translate(double x, double y);
-  wxDrawOp *Copy(wxPseudoMetaFile *newImage);
+  void Do(wxDC& dc, double xoffset, double yoffset) override;
+  void Scale(double xScale, double yScale) override;
+  void Translate(double x, double y) override;
+  wxDrawOp *Copy(wxPseudoMetaFile *newImage) override;
 
 public:
   double     m_x1;
@@ -132,11 +132,11 @@ class WXDLLIMPEXP_OGL wxOpDraw: public wxDrawOp
   wxOpDraw(int theOp, double theX1, double theY1, double theX2, double theY2,
          double radius = 0.0, const wxString& s = wxEmptyString);
   ~wxOpDraw();
-  void Do(wxDC& dc, double xoffset, double yoffset);
-  void Scale(double scaleX, double scaleY);
-  void Translate(double x, double y);
-  void Rotate(double x, double y, double theta, double sinTheta, double cosTheta);
-  wxDrawOp *Copy(wxPseudoMetaFile *newImage);
+  void Do(wxDC& dc, double xoffset, double yoffset) override;
+  void Scale(double scaleX, double scaleY) override;
+  void Translate(double x, double y) override;
+  void Rotate(double x, double y, double theta, double sinTheta, double cosTheta) override;
+  wxDrawOp *Copy(wxPseudoMetaFile *newImage) override;
 
 public:
   double     m_x1;
@@ -160,22 +160,22 @@ class WXDLLIMPEXP_OGL wxOpPolyDraw: public wxDrawOp
 public:
   wxOpPolyDraw(int theOp, int n, wxRealPoint *thePoints);
   ~wxOpPolyDraw();
-  void Do(wxDC& dc, double xoffset, double yoffset);
-  void Scale(double scaleX, double scaleY);
-  void Translate(double x, double y);
-  void Rotate(double x, double y, double theta, double sinTheta, double cosTheta);
-  wxDrawOp *Copy(wxPseudoMetaFile *newImage);
+  void Do(wxDC& dc, double xoffset, double yoffset) override;
+  void Scale(double scaleX, double scaleY) override;
+  void Translate(double x, double y) override;
+  void Rotate(double x, double y, double theta, double sinTheta, double cosTheta) override;
+  wxDrawOp *Copy(wxPseudoMetaFile *newImage) override;
 
   // Draw an outline using the current operation.
-  virtual bool OnDrawOutline(wxDC& dc, double x, double y, double w, double h,
-    double oldW, double oldH);
+  bool OnDrawOutline(wxDC& dc, double x, double y, double w, double h,
+                               double oldW, double oldH) override;
 
   // Get the perimeter point using this data
   bool GetPerimeterPoint(double x1, double y1,
-                                     double x2, double y2,
-                                     double *x3, double *y3,
-                                     double xOffset, double yOffset,
-                                     int attachmentMode);
+                         double x2, double y2,
+                         double *x3, double *y3,
+                         double xOffset, double yOffset,
+                         int attachmentMode) override;
 
 public:
   wxRealPoint*  m_points;
