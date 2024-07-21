@@ -504,9 +504,6 @@ class WXDLLIMPEXP_OGL wxShape: public wxShapeEvtHandler
 
 
  protected:
-  // Refresh the given rectangle region of the canvas.
-  void RefreshRect(double x, double y, double w, double h);
-
   wxShapeEvtHandler*    m_eventHandler;
   bool                  m_formatted;
   double                m_xpos, m_ypos;

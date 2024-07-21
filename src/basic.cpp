@@ -330,12 +330,6 @@ wxShape::~wxShape()
   GetEventHandler()->OnDelete();
 }
 
-void wxShape::RefreshRect(double x, double y, double w, double h)
-{
-    if (m_canvas)
-        m_canvas->RefreshRect(wxRect(WXROUND(x), WXROUND(y), WXROUND(w), WXROUND(h)));
-}
-
 void wxShape::SetHighlight(bool hi, bool recurse)
 {
   m_highlighted = hi;
@@ -968,20 +962,7 @@ void wxShape::OnEraseContents(wxReadOnlyDC& WXUNUSED(dc))
   if (!m_visible)
     return;
 
-  double maxX, maxY, minX, minY;
-  double xp = GetX();
-  double yp = GetY();
-  GetBoundingBoxMin(&minX, &minY);
-  GetBoundingBoxMax(&maxX, &maxY);
-  double topLeftX = (double)(xp - (maxX / 2.0) - 2.0);
-  double topLeftY = (double)(yp - (maxY / 2.0) - 2.0);
-
-    int penWidth = 0;
-    if (m_pen)
-      penWidth = m_pen->GetWidth();
-
-    RefreshRect(topLeftX - penWidth, topLeftY - penWidth,
-                maxX + penWidth*2.0 + 4.0, maxY + penWidth*2.0 + 4.0);
+  Redraw();
 }
 
 void wxShape::EraseLinks(wxReadOnlyDC& dc, int attachment, bool recurse)
@@ -1475,10 +1456,11 @@ void wxShape::Redraw()
 {
     if (m_canvas)
     {
-        double maxX, maxY;
-        GetBoundingBoxMax(&maxX, &maxY);
-
-        RefreshRect(m_xpos, m_ypos, maxX, maxY);
+        // Refreshing just the shape rectangle computed by GetBoundingBoxMax()
+        // doesn't work, at least with wxGTK, but it's not really obvious if it
+        // has any advantages over refreshing the entire canvas when using
+        // double buffering anyhow, so just do this, as it's much simpler.
+        m_canvas->Refresh();
     }
 }
 
@@ -2599,31 +2581,7 @@ void wxShape::OnEraseBranches(wxReadOnlyDC& WXUNUSED(dc), int attachment)
     if (count == 0)
         return;
 
-    wxRealPoint root, neck, shoulder1, shoulder2;
-    GetBranchingAttachmentInfo(attachment, root, neck, shoulder1, shoulder2);
-
-    // Erase neck
-    RefreshRect(root.x, root.y, neck.x, neck.y);
-
-    if (count > 1)
-    {
-        // Erase shoulder-to-shoulder line
-        RefreshRect(shoulder1.x, shoulder1.y, shoulder2.x, shoulder2.y);
-    }
-    // Draw all the little branches
-    int i;
-    for (i = 0; i < count; i++)
-    {
-        wxRealPoint pt, stemPt;
-        GetBranchingAttachmentPoint(attachment, i, pt, stemPt);
-        RefreshRect(stemPt.x, stemPt.y, pt.x, pt.y);
-
-        if ((GetBranchStyle() & BRANCHING_ATTACHMENT_BLOB) && (count > 1))
-        {
-            long blobSize=6;
-            RefreshRect(stemPt.x - (blobSize/2.0), stemPt.y - (blobSize/2.0), blobSize, blobSize);
-        }
-    }
+    Redraw();
 }
 
 void wxShape::OnEraseBranches(wxReadOnlyDC& dc)

@@ -260,24 +260,14 @@ void wxLineShape::DrawRegion(wxDC& dc, wxShapeRegion *region, double x, double y
   }
 }
 
-void wxLineShape::EraseRegion(wxReadOnlyDC& WXUNUSED(dc), wxShapeRegion *region, double x, double y)
+void wxLineShape::EraseRegion(wxReadOnlyDC& WXUNUSED(dc), wxShapeRegion *region, double WXUNUSED(x), double WXUNUSED(y))
 {
   if (GetDisableLabel())
     return;
 
-  double w, h;
-  double xx, yy;
-  region->GetSize(&w, &h);
-
-  // Get offset from x, y
-  region->GetPosition(&xx, &yy);
-
-  double xp = xx + x;
-  double yp = yy + y;
-
   if (region->GetFormattedText().GetCount() > 0)
   {
-      RefreshRect(xp - w/2.0, yp - h/2.0, w, h);
+      Redraw();
   }
 }
 
