@@ -1557,17 +1557,17 @@ void wxDivisionShape::EditEdge(int WXUNUSED(side))
 // Popup menu
 void wxDivisionShape::PopupMenu(double x, double y)
 {
-  wxMenu* oglPopupDivisionMenu = new OGLPopupDivisionMenu;
+  wxMenu oglPopupDivisionMenu;
 
-  oglPopupDivisionMenu->SetClientData((void *)this);
+  oglPopupDivisionMenu.SetClientData((void *)this);
   if (m_leftSide)
-    oglPopupDivisionMenu->Enable(DIVISION_MENU_EDIT_LEFT_EDGE, true);
+    oglPopupDivisionMenu.Enable(DIVISION_MENU_EDIT_LEFT_EDGE, true);
   else
-    oglPopupDivisionMenu->Enable(DIVISION_MENU_EDIT_LEFT_EDGE, false);
+    oglPopupDivisionMenu.Enable(DIVISION_MENU_EDIT_LEFT_EDGE, false);
   if (m_topSide)
-    oglPopupDivisionMenu->Enable(DIVISION_MENU_EDIT_TOP_EDGE, true);
+    oglPopupDivisionMenu.Enable(DIVISION_MENU_EDIT_TOP_EDGE, true);
   else
-    oglPopupDivisionMenu->Enable(DIVISION_MENU_EDIT_TOP_EDGE, false);
+    oglPopupDivisionMenu.Enable(DIVISION_MENU_EDIT_TOP_EDGE, false);
 
   int x1, y1;
   m_canvas->GetViewStart(&x1, &y1);
@@ -1581,8 +1581,7 @@ void wxDivisionShape::PopupMenu(double x, double y)
   int mouse_x = (int)(dc.LogicalToDeviceX((long)(x - x1*unit_x)));
   int mouse_y = (int)(dc.LogicalToDeviceY((long)(y - y1*unit_y)));
 
-  m_canvas->PopupMenu(oglPopupDivisionMenu, mouse_x, mouse_y);
-  delete oglPopupDivisionMenu;
+  m_canvas->PopupMenu(&oglPopupDivisionMenu, mouse_x, mouse_y);
 }
 
 void wxDivisionShape::SetLeftSideColour(const wxString& colour)
