@@ -167,7 +167,7 @@ bool wxDiagramClipboard::CopyToClipboard(double scale)
 #if wxUSE_METAFILE
   // Make a metafile DC
   wxMetaFileDC mfDC;
-  if (mfDC.Ok())
+  if (mfDC.IsOk())
   {
     mfDC.SetUserScale(scale, scale);
 
