@@ -202,12 +202,12 @@ bool wxDiagramClipboard::CopyToClipboard(double scale)
     memDC.SelectObject(wxNullBitmap);
 
     // Open clipboard and set the data
-    if (wxOpenClipboard())
+    if (wxTheClipboard->Open())
     {
-        wxEmptyClipboard();
+        wxTheClipboard->Clear();
 
         // Copy the bitmap to the clipboard
-        wxSetClipboardData(wxDF_BITMAP, newBitmap, 0, 0);
+        wxTheClipboard->SetData(new wxBitmapDataObject(*newBitmap));
 
 #if 0 // TODO: replace this code (wxEnhMetaFile doesn't have SetClipboard)
         if (mf)
@@ -219,7 +219,7 @@ bool wxDiagramClipboard::CopyToClipboard(double scale)
 #endif
 
         // Close clipboard
-        wxCloseClipboard();
+        wxTheClipboard->Close();
     }
 
     delete newBitmap;
