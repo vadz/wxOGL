@@ -77,7 +77,7 @@ bool wxDiagramClipboard::DoCopy(wxDiagram* diagramFrom, wxDiagram* diagramTo, bo
             {
                 newShape->AssignNewIds();
             }
-            mapping.Put((long) shape, (wxObject*) newShape);
+            mapping.Put(wxPtrToUInt(shape), (wxObject*) newShape);
 
             newShape->SetX(newShape->GetX() + offsetX);
             newShape->SetY(newShape->GetY() + offsetY);
@@ -99,13 +99,13 @@ bool wxDiagramClipboard::DoCopy(wxDiagram* diagramFrom, wxDiagram* diagramTo, bo
             if ((diagramFrom == this) || (lineShape->GetTo()->Selected() && lineShape->GetFrom()->Selected()))
             {
                 wxLineShape* newShape = (wxLineShape*) shape->CreateNewCopy();
-                mapping.Put((long) shape, (wxObject*) newShape);
+                mapping.Put(wxPtrToUInt(shape), (wxObject*) newShape);
 
                 if (newIds)
                     newShape->AssignNewIds();
 
-                wxShape* fromShape = (wxShape*) mapping.Get((long) lineShape->GetFrom());
-                wxShape* toShape = (wxShape*) mapping.Get((long) lineShape->GetTo());
+                wxShape* fromShape = (wxShape*) mapping.Get(wxPtrToUInt(lineShape->GetFrom()));
+                wxShape* toShape = (wxShape*) mapping.Get(wxPtrToUInt(lineShape->GetTo()));
 
                 wxASSERT_MSG( (fromShape != NULL), _T("Could not find 'from' shape"));
                 wxASSERT_MSG( (toShape != NULL), _T("Could not find 'to' shape"));
@@ -127,7 +127,7 @@ bool wxDiagramClipboard::DoCopy(wxDiagram* diagramFrom, wxDiagram* diagramTo, bo
         wxShape* shape = (wxShape*) node->GetData();
         if (((diagramFrom == this) || shape->Selected()) && !shape->IsKindOf(CLASSINFO(wxLineShape)))
         {
-            wxShape* newShape = (wxShape*) mapping.Get((long) shape);
+            wxShape* newShape = (wxShape*) mapping.Get(wxPtrToUInt(shape));
 
             // Make a list of all the new lines, in the same order as the old lines.
             // Then apply the list of new lines to the shape.
@@ -138,7 +138,7 @@ bool wxDiagramClipboard::DoCopy(wxDiagram* diagramFrom, wxDiagram* diagramTo, bo
                 wxLineShape* lineShape = (wxLineShape*) lineNode->GetData();
                 if ((diagramFrom == this) || (lineShape->GetTo()->Selected() && lineShape->GetFrom()->Selected()))
                 {
-                    wxLineShape* newLineShape = (wxLineShape*) mapping.Get((long) lineShape);
+                    wxLineShape* newLineShape = (wxLineShape*) mapping.Get(wxPtrToUInt(lineShape));
 
                     wxASSERT_MSG( (newLineShape != NULL), _T("Could not find new line shape"));
 
@@ -167,7 +167,7 @@ bool wxDiagramClipboard::CopyToClipboard(double scale)
 #if wxUSE_METAFILE
   // Make a metafile DC
   wxMetaFileDC mfDC;
-  if (mfDC.Ok())
+  if (mfDC.IsOk())
   {
     mfDC.SetUserScale(scale, scale);
 
@@ -202,12 +202,12 @@ bool wxDiagramClipboard::CopyToClipboard(double scale)
     memDC.SelectObject(wxNullBitmap);
 
     // Open clipboard and set the data
-    if (wxOpenClipboard())
+    if (wxTheClipboard->Open())
     {
-        wxEmptyClipboard();
+        wxTheClipboard->Clear();
 
         // Copy the bitmap to the clipboard
-        wxSetClipboardData(wxDF_BITMAP, newBitmap, 0, 0);
+        wxTheClipboard->SetData(new wxBitmapDataObject(*newBitmap));
 
 #if 0 // TODO: replace this code (wxEnhMetaFile doesn't have SetClipboard)
         if (mf)
@@ -219,7 +219,7 @@ bool wxDiagramClipboard::CopyToClipboard(double scale)
 #endif
 
         // Close clipboard
-        wxCloseClipboard();
+        wxTheClipboard->Close();
     }
 
     delete newBitmap;

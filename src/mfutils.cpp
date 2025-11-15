@@ -535,7 +535,7 @@ bool wxXMetaFile::ReadFile(const wxChar *file)
         else style = wxPENSTYLE_SOLID;
 
         wxColour colour(GetRValue(colorref), GetGValue(colorref), GetBValue(colorref));
-        rec->param1 = (wxUIntPtr)wxThePenList->FindOrCreatePen(colour, x, style);
+        rec->param1 = wxPtrToUInt(wxThePenList->FindOrCreatePen(colour, x, style));
         metaRecords.Append(rec);
         gdiObjects.Append(rec);
 
@@ -614,7 +614,7 @@ bool wxXMetaFile::ReadFile(const wxChar *file)
                                           info.IsUnderlined()
                                          );
 
-        rec->param1 = (wxUIntPtr) theFont;
+        rec->param1 = wxPtrToUInt(theFont);
         metaRecords.Append(rec);
         gdiObjects.Append(rec);
         AddMetaRecordHandle(rec);
@@ -667,7 +667,7 @@ bool wxXMetaFile::ReadFile(const wxChar *file)
         }
 
         wxColour colour(GetRValue(colorref), GetGValue(colorref), GetBValue(colorref));
-        rec->param1 = (wxUIntPtr)wxTheBrushList->FindOrCreateBrush(colour, style);
+        rec->param1 = wxPtrToUInt(wxTheBrushList->FindOrCreateBrush(colour, style));
         metaRecords.Append(rec);
         gdiObjects.Append(rec);
         AddMetaRecordHandle(rec);
